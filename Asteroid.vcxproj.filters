@@ -9,5 +9,13 @@
     <ClCompile Include="src\Main.cpp">
       <Filter>objects</Filter>
     </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Game.h">
+      <Filter>objects</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
