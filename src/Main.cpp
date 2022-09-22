@@ -8,7 +8,7 @@
 
 #include "raylib.h"
 #include "iostream"
-#include "cmath"
+#include "raymath.h"
 
 using namespace std;
 
@@ -44,9 +44,6 @@ void main()
 	nave.width = 25;
 	nave.height = 25;
 
-	float posNave_x = nave.x;
-	float posNave_y = nave.y;
-
 	Vector2 pivot;
 	pivot.x = nave.width / 2;;
 	pivot.y = nave.height / 2;
@@ -57,6 +54,9 @@ void main()
 	float rotation = 0.0f;
 
 	Vector2 Vectordirec;
+	Vector2 Vectornormalizado;
+	Vector2 Aceleracion{0.01f};
+	Vector2 NuevaPosNave;
 
 	
 
@@ -64,19 +64,44 @@ void main()
 	{
 		//check input
 		//update
-		/*Vectordirec = posMouse - posNave;*/
+		
 		posMouse = GetMousePosition();
-		posNave = { posNave_x, posNave_y };
-		Vectordirec.x = posMouse.x - posNave.x;
-		Vectordirec.y = posMouse.y - posNave.y;
+
+		/*Vectordirec = posMouse - posNave;*/
+		Vectordirec.x = posMouse.x - nave.x;
+		Vectordirec.y = posMouse.y - nave.y;
 
 		
 		rotation = atan(Vectordirec.y / Vectordirec.x)*180/ PI;
 
+		/*direccionNormalizada = vectorDireccion /modulo(vectorDireccion)*/
+		Vectornormalizado= Vector2Normalize(Vectordirec);
+
+		if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+		{
+			    /*aceleracionNave += direccionNormalizada*/
+				Aceleracion.x += Vectornormalizado.x * 5.0f;
+				Aceleracion.y += Vectornormalizado.y * 5.0f;
+
+				/*nuevaPosNave = posNave + aceleracionNave * tiempoEntreFrames*/
+
+				nave.x = nave.x + Aceleracion.x * GetFrameTime();
+				nave.y = nave.y + Aceleracion.y * GetFrameTime();
+
+				
+				cout << Aceleracion.x << endl;
+				cout << Aceleracion.y << endl;
+			
+			
+			
+			
+		}
+
 
 		BeginDrawing();
+
 		DrawRectanglePro(nave, pivot, rotation, RED);
-		//DrawRectangle(posNave_x, posNave_y, nave.width, nave.height, RED);
+		
 		ClearBackground(BLACK);
 		EndDrawing();
 
@@ -85,6 +110,7 @@ void main()
 
 	CloseWindow();
 }
+
 void Draw()
 {
 	
