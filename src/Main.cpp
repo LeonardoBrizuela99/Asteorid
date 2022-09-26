@@ -33,6 +33,7 @@ const int SCREEN_WIDTH = 1024;
 //{
 //
 //}
+void Wall(Rectangle& nave);
 
 void main()
 {
@@ -80,15 +81,17 @@ void main()
 		if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
 		{
 			    /*aceleracionNave += direccionNormalizada*/
-				Aceleracion.x += Vectornormalizado.x * 5.0f;
-				Aceleracion.y += Vectornormalizado.y * 5.0f;
+				Aceleracion.x += Vectornormalizado.x * 0.5f;
+				Aceleracion.y += Vectornormalizado.y * 0.5f;
 
 				/*nuevaPosNave = posNave + aceleracionNave * tiempoEntreFrames*/
 
 				nave.x = nave.x + Aceleracion.x * GetFrameTime();
 				nave.y = nave.y + Aceleracion.y * GetFrameTime();
 
-				
+			
+				Wall(nave);
+
 				cout << Aceleracion.x << endl;
 				cout << Aceleracion.y << endl;
 			
@@ -114,4 +117,24 @@ void main()
 void Draw()
 {
 	
+}
+
+void Wall(Rectangle &nave)
+{
+	if (nave.x > SCREEN_WIDTH + nave.height)
+	{
+		nave.x = -nave.height;
+	}
+	else if (nave.x < -nave.height)
+	{
+		nave.x = SCREEN_WIDTH + nave.height;
+	}
+	if (nave.y > (SCREEN_HEIGHT + nave.height))
+	{
+		nave.y = -nave.height;
+	}
+	else if (nave.y < -(nave.height))
+	{
+		nave.y = SCREEN_HEIGHT + nave.height;
+	}
 }
