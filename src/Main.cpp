@@ -15,14 +15,15 @@ using namespace std;
 const int SCREEN_HEIGHT = 786;
 const int SCREEN_WIDTH = 1024;
 const int NAVE_BALAS_MAX = 15;
+const int TIEMPO_BALA= 600;
 
 
 struct circul
 {
-	int x;
-	int y;
-	float speed_x;
-	float speed_y;
+	float x;
+	float y;
+	float velocidad_x;
+	float velocidad_y;
 	float radio;
 	int spawnVidaBala;
 	bool dispara;
@@ -49,12 +50,13 @@ circul bala[NAVE_BALAS_MAX] = { 0 };
 //
 //}
 void Wall(Rectangle& nave);
+void Pausa(bool& pausa);
 
 void main()
 {
 	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "ASTEROID");
 
-	bool pause = false;
+	bool pausa = false;
 
 	Rectangle nave;
 	nave.x = SCREEN_WIDTH / 2.0f;
@@ -63,16 +65,13 @@ void main()
 	nave.height = 25;
 	int nave_vida = 3;
 
-
-	
-	
 	
 	for (int i = 0; i < NAVE_BALAS_MAX; i++)
 	{
 		bala[i].x = 0;
 		bala[i].y = 0;
-		bala[i].speed_x = 0;
-		bala[i].speed_y = 0;
+		bala[i].velocidad_x = 0.1f;
+		bala[i].velocidad_y = 0.1f;
 		bala[i].radio = 2.0f;
 		bala[i].dispara = false;
 		bala[i].spawnVidaBala = 0;
@@ -81,7 +80,7 @@ void main()
 	
 
 	Vector2 pivot;
-	pivot.x = nave.width / 2;;
+	pivot.x = nave.width / 2;
 	pivot.y = nave.height / 2;
 
 	Vector2 posMouse;
@@ -98,17 +97,10 @@ void main()
 
 	while (!WindowShouldClose())
 	{
+	
+		Pausa(pausa);	
 
-		
-		if (IsKeyPressed('P')||IsKeyPressed('p'))
-		{
-			pause = !pause;
-			//cout << pause << endl;
-			//0 false
-			//1 true
-		}
-
-		if (!pause)
+		if (!pausa)
 		{
 			posMouse = GetMousePosition();
 
@@ -127,8 +119,8 @@ void main()
 			if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
 			{
 				/*aceleracionNave += direccionNormalizada*/
-				Aceleracion.x += Vectornormalizado.x * 0.5f;
-				Aceleracion.y += Vectornormalizado.y * 0.5f;
+				Aceleracion.x += Vectornormalizado.x * 0.2f;
+				Aceleracion.y += Vectornormalizado.y * 0.2f;
 
 				/*nuevaPosNave = posNave + aceleracionNave * tiempoEntreFrames*/
 
@@ -136,11 +128,10 @@ void main()
 				nave.y = nave.y + Aceleracion.y * GetFrameTime();
 
 
-
 				Wall(nave);
 
-				cout << Aceleracion.x << endl;
-				cout << Aceleracion.y << endl;
+				/*cout << Aceleracion.x << endl;
+				cout << Aceleracion.y << endl;*/
 
 			}
 
@@ -150,23 +141,26 @@ void main()
 				{
 					if (!bala[i].dispara)
 					{
-						bala[i].x = nave.x + sin(rotation * 180 / PI) * (nave.height);
-						bala[i].y = nave.y - cos(rotation * 180 / PI) * (nave.height);
+						bala[i].x = nave.x;
+						bala[i].y = nave.y;
 						bala[i].dispara = true;
-						bala[i].speed_x = sin(rotation * 180 / PI) * GetFrameTime();
-						bala[i].speed_y = cos(rotation * 180 / PI) * GetFrameTime();
+						bala[i].velocidad_x = Vectornormalizado.x;
+						bala[i].velocidad_y = Vectornormalizado.y;
 						bala[i].rotation = rotation;
 						break;
+
+						//+sin(rotation * 180 / PI) * (nave.height)
+						//	- cos(rotation * 180 / PI) * (nave.height)
 
 					}
 				}
 			}
+
 			for (int i = 0; i < NAVE_BALAS_MAX; i++)
 			{
 				if (bala[i].dispara)
 				{
 					bala[i].spawnVidaBala++;
-
 				}
 			}
 
@@ -174,37 +168,42 @@ void main()
 			{
 				if (bala[i].dispara)
 				{
-					bala[i].x += bala[i].speed_x;
-					bala[i].y -= bala[i].speed_y;
+					//movimiento de la bala
+					bala[i].x += bala[i].velocidad_x+ Vectornormalizado.x;
+					bala[i].y -= bala[i].velocidad_y + Vectornormalizado.y;
 
-					if (bala[i].x > SCREEN_WIDTH + bala[i].radio)
+					cout << bala->x << i << endl;
+					cout << bala->y << i << endl;
+
+					//desaparicion de balas cuando sale de la pantalla
+					if (bala[i].x > SCREEN_WIDTH )
 					{
 						bala[i].dispara = false;
 						bala[i].spawnVidaBala = 0;
 					}
-					else if (bala[i].x < 0 - bala[i].radio)
+					else if (bala[i].x < 0 )
 					{
 						bala[i].dispara = false;
 						bala[i].spawnVidaBala = 0;
 					}
-					if (bala[i].y > SCREEN_HEIGHT + bala[i].radio)
+					if (bala[i].y > SCREEN_HEIGHT )
 					{
 						bala[i].dispara = false;
 						bala[i].spawnVidaBala = 0;
 					}
 
-					else if (bala[i].y < 0 - bala[i].radio)
+					else if (bala[i].y < 0 )
 					{
 						bala[i].dispara = false;
 						bala[i].spawnVidaBala = 0;
 					}
 
-					if (bala[i].spawnVidaBala >= 60)
+					if (bala[i].spawnVidaBala >= TIEMPO_BALA)
 					{
 						bala[i].x = 0;
 						bala[i].y = 0;
-						bala[i].speed_x = 0;
-						bala[i].speed_y = 0;
+						bala[i].velocidad_x = 0;
+						bala[i].velocidad_y = 0;
 						bala[i].spawnVidaBala = 0;
 						bala[i].dispara = false;
 
@@ -213,10 +212,6 @@ void main()
 			}
 		}
 		
-
-
-	
-
 		BeginDrawing();
 
 		DrawRectanglePro(nave, pivot, rotation, RED);
@@ -225,11 +220,9 @@ void main()
 		{
 			if (bala[i].dispara)
 			{
-				DrawCircle(bala[i].x, bala[i].y, bala[i].rotation, WHITE);
+				DrawCircle(bala[i].x, bala[i].y, bala[i].radio, WHITE);
 			}
 		}
-		
-		
 		
 		ClearBackground(BLACK);
 		EndDrawing();
@@ -262,5 +255,15 @@ void Wall(Rectangle &nave)
 	else if (nave.y < -(nave.height))
 	{
 		nave.y = SCREEN_HEIGHT + nave.height;
+	}
+}
+void Pausa(bool &pausa)
+{
+	if (IsKeyPressed('P') || IsKeyPressed('p')||IsKeyPressed(KEY_ESCAPE))
+	{
+		pausa = !pausa;
+		//cout << pause << endl;
+		//0 false
+		//1 true
 	}
 }
