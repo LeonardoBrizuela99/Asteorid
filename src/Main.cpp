@@ -14,6 +14,21 @@ using namespace std;
 
 const int SCREEN_HEIGHT = 786;
 const int SCREEN_WIDTH = 1024;
+const int NAVE_BALAS_MAX = 15;
+
+
+struct circul
+{
+	int x;
+	int y;
+	float speed_x;
+	float speed_y;
+	float radio;
+	int spawnVidaBala;
+	bool dispara;
+	float rotation;
+	
+};
 
 //struct Nave
 //{
@@ -22,7 +37,7 @@ const int SCREEN_WIDTH = 1024;
 //	int Widht=25;
 //	int Height=25;
 //};
-
+circul bala[NAVE_BALAS_MAX] = { 0 };
 
 //void init()
 //{
@@ -39,11 +54,31 @@ void main()
 {
 	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "ASTEROID");
 
+	bool pause = false;
+
 	Rectangle nave;
 	nave.x = SCREEN_WIDTH / 2.0f;
 	nave.y = SCREEN_HEIGHT / 2.0f;
 	nave.width = 25;
 	nave.height = 25;
+	int nave_vida = 3;
+
+
+	
+	
+	
+	for (int i = 0; i < NAVE_BALAS_MAX; i++)
+	{
+		bala[i].x = 0;
+		bala[i].y = 0;
+		bala[i].speed_x = 0;
+		bala[i].speed_y = 0;
+		bala[i].radio = 2.0f;
+		bala[i].dispara = false;
+		bala[i].spawnVidaBala = 0;
+	}
+	
+	
 
 	Vector2 pivot;
 	pivot.x = nave.width / 2;;
@@ -53,34 +88,45 @@ void main()
 	Vector2 posNave ;
 	
 	float rotation = 0.0f;
-
+	
 	Vector2 Vectordirec;
 	Vector2 Vectornormalizado;
 	Vector2 Aceleracion{0.01f};
-	Vector2 NuevaPosNave;
+	Vector2 NuevaPosNave{ 0 };
 
 	
 
 	while (!WindowShouldClose())
 	{
-		//check input
-		//update
-		
-		posMouse = GetMousePosition();
-
-		/*Vectordirec = posMouse - posNave;*/
-		Vectordirec.x = posMouse.x - nave.x;
-		Vectordirec.y = posMouse.y - nave.y;
 
 		
-		rotation = atan(Vectordirec.y / Vectordirec.x)*180/ PI;
-
-		/*direccionNormalizada = vectorDireccion /modulo(vectorDireccion)*/
-		Vectornormalizado= Vector2Normalize(Vectordirec);
-
-		if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+		if (IsKeyPressed('P')||IsKeyPressed('p'))
 		{
-			    /*aceleracionNave += direccionNormalizada*/
+			pause = !pause;
+			//cout << pause << endl;
+			//0 false
+			//1 true
+		}
+
+		if (!pause)
+		{
+			posMouse = GetMousePosition();
+
+			/*Vectordirec = posMouse - posNave;*/
+			Vectordirec.x = posMouse.x - nave.x;
+			Vectordirec.y = posMouse.y - nave.y;
+
+
+			rotation = atan(Vectordirec.y / Vectordirec.x) * 180 / PI;
+
+			/*direccionNormalizada = vectorDireccion /modulo(vectorDireccion)*/
+			Vectornormalizado = Vector2Normalize(Vectordirec);
+			//check input
+			//update
+
+			if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+			{
+				/*aceleracionNave += direccionNormalizada*/
 				Aceleracion.x += Vectornormalizado.x * 0.5f;
 				Aceleracion.y += Vectornormalizado.y * 0.5f;
 
@@ -89,21 +135,101 @@ void main()
 				nave.x = nave.x + Aceleracion.x * GetFrameTime();
 				nave.y = nave.y + Aceleracion.y * GetFrameTime();
 
-			
+
+
 				Wall(nave);
 
 				cout << Aceleracion.x << endl;
 				cout << Aceleracion.y << endl;
-			
-			
-			
-			
-		}
 
+			}
+
+			if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+			{
+				for (int i = 0; i < NAVE_BALAS_MAX; i++)
+				{
+					if (!bala[i].dispara)
+					{
+						bala[i].x = nave.x + sin(rotation * 180 / PI) * (nave.height);
+						bala[i].y = nave.y - cos(rotation * 180 / PI) * (nave.height);
+						bala[i].dispara = true;
+						bala[i].speed_x = sin(rotation * 180 / PI) * GetFrameTime();
+						bala[i].speed_y = cos(rotation * 180 / PI) * GetFrameTime();
+						bala[i].rotation = rotation;
+						break;
+
+					}
+				}
+			}
+			for (int i = 0; i < NAVE_BALAS_MAX; i++)
+			{
+				if (bala[i].dispara)
+				{
+					bala[i].spawnVidaBala++;
+
+				}
+			}
+
+			for (int i = 0; i < NAVE_BALAS_MAX; i++)
+			{
+				if (bala[i].dispara)
+				{
+					bala[i].x += bala[i].speed_x;
+					bala[i].y -= bala[i].speed_y;
+
+					if (bala[i].x > SCREEN_WIDTH + bala[i].radio)
+					{
+						bala[i].dispara = false;
+						bala[i].spawnVidaBala = 0;
+					}
+					else if (bala[i].x < 0 - bala[i].radio)
+					{
+						bala[i].dispara = false;
+						bala[i].spawnVidaBala = 0;
+					}
+					if (bala[i].y > SCREEN_HEIGHT + bala[i].radio)
+					{
+						bala[i].dispara = false;
+						bala[i].spawnVidaBala = 0;
+					}
+
+					else if (bala[i].y < 0 - bala[i].radio)
+					{
+						bala[i].dispara = false;
+						bala[i].spawnVidaBala = 0;
+					}
+
+					if (bala[i].spawnVidaBala >= 60)
+					{
+						bala[i].x = 0;
+						bala[i].y = 0;
+						bala[i].speed_x = 0;
+						bala[i].speed_y = 0;
+						bala[i].spawnVidaBala = 0;
+						bala[i].dispara = false;
+
+					}
+				}
+			}
+		}
+		
+
+
+	
 
 		BeginDrawing();
 
 		DrawRectanglePro(nave, pivot, rotation, RED);
+
+		for (int i = 0; i < NAVE_BALAS_MAX; i++)
+		{
+			if (bala[i].dispara)
+			{
+				DrawCircle(bala[i].x, bala[i].y, bala[i].rotation, WHITE);
+			}
+		}
+		
+		
 		
 		ClearBackground(BLACK);
 		EndDrawing();
