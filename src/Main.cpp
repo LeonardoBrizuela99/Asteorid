@@ -170,10 +170,9 @@ void main()
 				{
 					//movimiento de la bala
 					bala[i].x += bala[i].velocidad_x+ Vectornormalizado.x;
-					bala[i].y -= bala[i].velocidad_y + Vectornormalizado.y;
+					bala[i].y += bala[i].velocidad_y + Vectornormalizado.y;
 
-					cout << bala->x << i << endl;
-					cout << bala->y << i << endl;
+					
 
 					//desaparicion de balas cuando sale de la pantalla
 					if (bala[i].x > SCREEN_WIDTH )
