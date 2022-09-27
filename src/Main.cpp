@@ -70,8 +70,8 @@ void main()
 	{
 		bala[i].x = 0;
 		bala[i].y = 0;
-		bala[i].velocidad_x = 0.1f;
-		bala[i].velocidad_y = 0.1f;
+		bala[i].velocidad_x = 0.01f;
+		bala[i].velocidad_y = 0.01f;
 		bala[i].radio = 2.0f;
 		bala[i].dispara = false;
 		bala[i].spawnVidaBala = 0;
@@ -169,8 +169,8 @@ void main()
 				if (bala[i].dispara)
 				{
 					//movimiento de la bala
-					bala[i].x += bala[i].velocidad_x+ Vectornormalizado.x;
-					bala[i].y += bala[i].velocidad_y + Vectornormalizado.y;
+					bala[i].x += bala[i].velocidad_x + Vectornormalizado.x*GetFrameTime();
+					bala[i].y += bala[i].velocidad_y + Vectornormalizado.y*GetFrameTime();
 
 					
 
