@@ -51,6 +51,8 @@ circul bala[NAVE_BALAS_MAX] = { 0 };
 //}
 void Wall(Rectangle& nave);
 void Pausa(bool& pausa);
+void TextMenu();
+void Menu();
 
 void main()
 {
@@ -97,6 +99,7 @@ void main()
 
 	while (!WindowShouldClose())
 	{
+		Menu();
 	
 		Pausa(pausa);	
 
@@ -265,4 +268,39 @@ void Pausa(bool &pausa)
 		//0 false
 		//1 true
 	}
+}
+void DrawMenu(Rectangle Caja,Rectangle Juego, Rectangle Creditos, Rectangle instrucciones)
+{
+	
+	
+}
+
+void TextMenu()
+{
+	DrawText("ASTEROID", GetScreenWidth() / 2-250 , 100, 100, WHITE);
+	DrawText("CREDITOS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 + 200, 30, WHITE);
+	DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 +70, 30, WHITE);
+	DrawText("JUGAR", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 -50, 30, WHITE);
+}
+
+void Menu() {
+
+	Rectangle Caja = { GetScreenWidth() / 2, GetScreenHeight() / 2, 50, 50 };
+	Rectangle Juego = { GetScreenWidth() / 2 - 85, GetScreenHeight() / 2 - 50, 250, 100 };
+	Rectangle Creditos = { GetScreenWidth() / 2 + 200, GetScreenHeight() / 2 + 25, 250, 100 };
+	Rectangle Instruciones = { GetScreenWidth() / 2 - 370, GetScreenHeight() / 2 + 25, 250, 100 };
+
+	Caja.x = GetMouseX() - Caja.width / 2;
+	Caja.y = GetMouseY() - Caja.height / 2;
+
+	DrawMenu(Caja, Juego, Creditos, Instruciones);
+	TextMenu();
+
+	/*ActivarReincicios();
+
+	Juego(Caja, Juego);
+	Creditos(Caja, Creditos);
+	Regla(Caja, Instruciones);*/
+
+
 }
