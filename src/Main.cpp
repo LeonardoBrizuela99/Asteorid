@@ -17,6 +17,11 @@ const float SCREEN_WIDTH = 1024;
 const int NAVE_BALAS_MAX = 15;
 const int TIEMPO_BALA= 60000;
 
+const int METEORO_GRANDE = 4;
+const int METEORO_MEDIANO = 8;
+const int METEORO_PEQUENIO= 16;
+const int METEORO_VELOCIDAD= 2;
+
 
 struct circul
 {
@@ -29,6 +34,14 @@ struct circul
 	bool dispara;
 	float rotation;
 	
+};
+
+struct Meteoro
+{
+	Vector2 postion;
+	Vector2 velocidad;
+	float radio;
+	bool activo;
 };
 
 //struct Nave
@@ -66,6 +79,7 @@ int main()
 
 	bool pausa = false;
 
+	Texture2D textura = LoadTexture("res/ufoBlue");
 	Rectangle nave;
 	nave.x = SCREEN_WIDTH / 2.0f;
 	nave.y = SCREEN_HEIGHT / 2.0f;
@@ -109,6 +123,8 @@ int main()
 	
 		Pausa(pausa);	
 
+		
+
 		if (!pausa)
 		{
 			posMouse = GetMousePosition();
@@ -131,18 +147,17 @@ int main()
 				Aceleracion.x += Vectornormalizado.x * 0.2f;
 				Aceleracion.y += Vectornormalizado.y * 0.2f;
 
-				/*nuevaPosNave = posNave + aceleracionNave * tiempoEntreFrames*/
-
-				nave.x = nave.x + Aceleracion.x * GetFrameTime();
-				nave.y = nave.y + Aceleracion.y * GetFrameTime();
-
+				
 
 				Wall(nave);
 
-				/*cout << Aceleracion.x << endl;
-				cout << Aceleracion.y << endl;*/
 
 			}
+
+			//sacandolo del if de arriba la nave ahora posee inercia a la hora de dejar de mantener presionado el click
+			/*nuevaPosNave = posNave + aceleracionNave * tiempoEntreFrames*/
+			nave.x = nave.x + Aceleracion.x * GetFrameTime();
+			nave.y = nave.y + Aceleracion.y * GetFrameTime();
 
 			if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
 			{
@@ -153,13 +168,10 @@ int main()
 						bala[i].x = nave.x;
 						bala[i].y = nave.y;
 						bala[i].dispara = true;
-						bala[i].velocidad_x = Vectornormalizado.x*0.1f;
-						bala[i].velocidad_y = Vectornormalizado.y * 0.1f;
+						bala[i].velocidad_x = Vectornormalizado.x* 0.08f;
+						bala[i].velocidad_y = Vectornormalizado.y *0.08f;
 						bala[i].rotation = rotation;
 						break;
-
-						//+sin(rotation * 180 / PI) * (nave.height)
-						//	- cos(rotation * 180 / PI) * (nave.height)
 
 					}
 				}
@@ -169,7 +181,7 @@ int main()
 			{
 				if (bala[i].dispara)
 				{
-					bala[i].spawnVidaBala++;
+					bala[i].spawnVidaBala++; 
 				}
 			}
 
@@ -221,6 +233,9 @@ int main()
 		}
 		
 		BeginDrawing();
+
+		Texture2D texture = LoadTexture("res/ufoBlue");
+		DrawTexture(texture, static_cast<int>(SCREEN_HEIGHT) / 2, static_cast<int>(SCREEN_WIDTH) / 2, WHITE);
 
 		DrawRectanglePro(nave, pivot, rotation, RED);
 
@@ -286,10 +301,12 @@ void Pausa(bool &pausa)
 
 //void TextMenu()
 //{
-//	DrawText("ASTEROID", GetScreenWidth() / 2 -290, 100, 100, WHITE);
+//	/*DrawText("ASTEROID", GetScreenWidth() / 2 -290, 100, 100, WHITE);
 //	DrawText("CREDITOS", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 200, 30, WHITE);
 //	DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 +70, 30, WHITE);
-//	DrawText("JUGAR", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 -50, 30, WHITE);
+//	DrawText("JUGAR", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 -50, 30, WHITE);*/
+//	
+//
 //}
 
 //void Menu() {
