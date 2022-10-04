@@ -77,9 +77,9 @@ int main()
 {
 	InitWindow(static_cast <int>(SCREEN_WIDTH), static_cast <int>(SCREEN_HEIGHT), "ASTEROID");
 
+	Texture2D texture = LoadTexture("res/ufoBlue.png");
 	bool pausa = false;
-
-	Texture2D textura = LoadTexture("res/ufoBlue");
+;
 	Rectangle nave;
 	nave.x = SCREEN_WIDTH / 2.0f;
 	nave.y = SCREEN_HEIGHT / 2.0f;
@@ -234,7 +234,7 @@ int main()
 		
 		BeginDrawing();
 
-		Texture2D texture = LoadTexture("res/ufoBlue");
+	
 		DrawTexture(texture, static_cast<int>(SCREEN_HEIGHT) / 2, static_cast<int>(SCREEN_WIDTH) / 2, WHITE);
 
 		DrawRectanglePro(nave, pivot, rotation, RED);
