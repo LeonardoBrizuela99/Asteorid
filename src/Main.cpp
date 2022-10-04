@@ -15,7 +15,7 @@ using namespace std;
 const float SCREEN_HEIGHT = 786;
 const float SCREEN_WIDTH = 1024;
 const int NAVE_BALAS_MAX = 15;
-const int TIEMPO_BALA= 600;
+const int TIEMPO_BALA= 60000;
 
 
 struct circul
@@ -51,8 +51,14 @@ circul bala[NAVE_BALAS_MAX] = { 0 };
 //}
 void Wall(Rectangle& nave);
 void Pausa(bool& pausa);
-void TextMenu();
-void Menu();
+//void TextMenu();
+//void Menu();
+//void DrawMenu(Rectangle cursor, Rectangle juego, Rectangle creditos, Rectangle instrucciones);
+//void Jugar(Rectangle juego, Rectangle cursor);
+//void Reglas(Rectangle instrucciones, Rectangle cursor);
+//void Creditos(Rectangle creditos, Rectangle cursor);
+
+
 
 int main()
 {
@@ -99,7 +105,7 @@ int main()
 
 	while (!WindowShouldClose())
 	{
-		Menu();
+		//Menu();
 	
 		Pausa(pausa);	
 
@@ -147,8 +153,8 @@ int main()
 						bala[i].x = nave.x;
 						bala[i].y = nave.y;
 						bala[i].dispara = true;
-						bala[i].velocidad_x = Vectornormalizado.x;
-						bala[i].velocidad_y = Vectornormalizado.y;
+						bala[i].velocidad_x = Vectornormalizado.x*0.1f;
+						bala[i].velocidad_y = Vectornormalizado.y * 0.1f;
 						bala[i].rotation = rotation;
 						break;
 
@@ -269,38 +275,78 @@ void Pausa(bool &pausa)
 		//1 true
 	}
 }
-//void DrawMenu(Rectangle Caja,Rectangle Juego, Rectangle Creditos, Rectangle instrucciones)
+//void DrawMenu(Rectangle cursor, Rectangle juego, Rectangle creditos, Rectangle instrucciones)
 //{
-//	
-//	
+//	DrawRectangleRec(cursor, RED);
+//	DrawRectangleRec(juego, RED);
+//	DrawRectangleRec(creditos, RED);
+//	DrawRectangleRec(instrucciones, RED);
+//
 //}
 
-void TextMenu()
-{
-	DrawText("ASTEROID", GetScreenWidth() / 2 -250, 100, 100, WHITE);
-	DrawText("CREDITOS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 + 200, 30, WHITE);
-	DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 +70, 30, WHITE);
-	DrawText("JUGAR", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 -50, 30, WHITE);
-}
+//void TextMenu()
+//{
+//	DrawText("ASTEROID", GetScreenWidth() / 2 -290, 100, 100, WHITE);
+//	DrawText("CREDITOS", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 200, 30, WHITE);
+//	DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 +70, 30, WHITE);
+//	DrawText("JUGAR", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 -50, 30, WHITE);
+//}
 
-void Menu() {
+//void Menu() {
+//
+//	Rectangle cursor = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2)-250, static_cast<int>(GetScreenHeight()) / static_cast <float>(2)+200, 5, 5 };
+//	Rectangle juego = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) - 90, 250, 100 };
+//	Rectangle instruciones = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) + 35, 250, 100 };
+//	Rectangle creditos = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) + 160, 250, 100 };
+//
+//	cursor.x = GetMouseX() - cursor.width / 2;
+//	cursor.y = GetMouseY() - cursor.height / 2;
+//
+//	DrawMenu(cursor, juego, creditos, instruciones);
+//	TextMenu();
+//
+//	
+//	Reglas(instruciones, cursor);
+//	Jugar(juego, cursor);
+//	Creditos( creditos, cursor);
+//
+//}
 
-	Rectangle Caja = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2), static_cast<int>(GetScreenHeight()) / static_cast <float>(2), 50, 50 };
-	Rectangle Juego = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 850, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) - 50, 250, 100 };
-	Rectangle Creditos = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) + 200, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) + 25, 250, 100 };
-	Rectangle Instruciones = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 370, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) + 25, 250, 100 };
-
-	Caja.x = GetMouseX() - Caja.width / 2;
-	Caja.y = GetMouseY() - Caja.height / 2;
-
-	/*DrawMenu(Caja, Juego, Creditos, Instruciones);*/
-	TextMenu();
-
-	/*ActivarReincicios();
-
-	Juego(Caja, Juego);
-	Creditos(Caja, Creditos);
-	Regla(Caja, Instruciones);*/
-
-
-}
+//void Jugar(Rectangle juego, Rectangle caja)
+//{
+//	if (CheckCollisionRecs(juego, caja))
+//	{
+//		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+//		{
+//			DrawRectangleRec(juego, YELLOW);
+//			DrawText("JUGAR", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 - 50, 30, WHITE);
+//		}
+//		
+//	}
+//}
+//
+//void Reglas(Rectangle instrucciones, Rectangle caja)
+//{
+//	if (CheckCollisionRecs(instrucciones, caja))
+//	{
+//		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+//		{
+//			DrawRectangleRec(instrucciones, YELLOW);
+//			DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 + 70, 30, WHITE);
+//		}
+//
+//	}
+//}
+//
+//void Creditos(Rectangle creditos, Rectangle cursor)
+//{
+//	if (CheckCollisionRecs(creditos, cursor))
+//	{
+//		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+//		{
+//			DrawRectangleRec(creditos, YELLOW);
+//			DrawText("CREDITOS", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 200, 30, WHITE);
+//		}
+//
+//	}
+//}
