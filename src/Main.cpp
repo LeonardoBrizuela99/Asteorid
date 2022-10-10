@@ -21,7 +21,6 @@ const int MAX_METEORO_GRANDE = 4;
 const int MAX_METEORO_MEDIANO = 8;
 const int MAX_METEORO_CHICO= 16;
 const int METEORO_VELOCIDAD= 1;
-bool gameplay = false;
 
 
 
@@ -209,8 +208,8 @@ int main()
 		
 
 		
-		while (gameplay==true)
-		{
+		
+		
 			Pausa(pausa);
 			if (!pausa)
 			{
@@ -398,9 +397,9 @@ int main()
 					}
 
 				}
-		}
+			}
 		
-	}
+	
 		
 		
 
@@ -450,7 +449,7 @@ int main()
 		EndDrawing();
 
 		/*Draw();*/
-	}
+    }
 
 	CloseWindow();
 }
@@ -536,7 +535,7 @@ void Jugar(Rectangle juego, Rectangle caja)
 		{
 			DrawRectangleRec(juego, YELLOW);
 			DrawText("JUGAR", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 - 50, 30, WHITE);
-			gameplay = true;
+			
 		}
 		
 	}
