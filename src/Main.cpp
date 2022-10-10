@@ -21,6 +21,8 @@ const int MAX_METEORO_GRANDE = 4;
 const int MAX_METEORO_MEDIANO = 8;
 const int MAX_METEORO_CHICO= 16;
 const int METEORO_VELOCIDAD= 1;
+bool gameplay = false;
+
 
 
 struct circul
@@ -67,12 +69,12 @@ Meteoro meteoroChico[MAX_METEORO_CHICO] = { 0 };
 //}
 void Wall(Rectangle& nave);
 void Pausa(bool& pausa);
-//void TextMenu();
-//void Menu();
-//void DrawMenu(Rectangle cursor, Rectangle juego, Rectangle creditos, Rectangle instrucciones);
-//void Jugar(Rectangle juego, Rectangle cursor);
-//void Reglas(Rectangle instrucciones, Rectangle cursor);
-//void Creditos(Rectangle creditos, Rectangle cursor);
+void TextMenu();
+void Menu();
+void DrawMenu(Rectangle cursor, Rectangle juego, Rectangle creditos, Rectangle instrucciones);
+void Jugar(Rectangle juego, Rectangle cursor);
+void Reglas(Rectangle instrucciones, Rectangle cursor);
+void Creditos(Rectangle creditos, Rectangle cursor);
 
 
 
@@ -81,7 +83,7 @@ int main()
 	InitWindow(static_cast <int>(SCREEN_WIDTH), static_cast <int>(SCREEN_HEIGHT), "ASTEROID");
 
 	int posx, posy = 0;
-	int velx, vely = 0;
+	float velx, vely = 0;
 	bool rangocorrecto = 0;
 
 	//int contadorMeteorosDestruido = 0;
@@ -131,13 +133,13 @@ int main()
 
 		rangocorrecto = false;
 
-		velx = GetRandomValue(-static_cast <int>(METEORO_VELOCIDAD) , static_cast <int>(METEORO_VELOCIDAD));
-		vely = GetRandomValue(-static_cast <int>(METEORO_VELOCIDAD) , static_cast <int>(METEORO_VELOCIDAD));
+		velx = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD) , /*static_cast <int>*/(METEORO_VELOCIDAD));
+		vely = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD) , /*static_cast <int>*/(METEORO_VELOCIDAD));
 
 		if (velx==0 && vely==0)
 		{
-			velx = GetRandomValue(-static_cast <int>(METEORO_VELOCIDAD), static_cast <int>(METEORO_VELOCIDAD));
-			vely = GetRandomValue(-static_cast <int>(METEORO_VELOCIDAD), static_cast <int>(METEORO_VELOCIDAD));
+			velx = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD), /*static_cast <int>*/(METEORO_VELOCIDAD));
+			vely = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD), /*static_cast <int>*/(METEORO_VELOCIDAD));
 				
 		}
 		else
@@ -202,201 +204,205 @@ int main()
 
 	while (!WindowShouldClose())
 	{
-		//Menu();
+		Menu();
 	
-		Pausa(pausa);	
-
 		
 
-		if (!pausa)
+		
+		while (gameplay==true)
 		{
-			posMouse = GetMousePosition();
-
-			/*Vectordirec = posMouse - posNave;*/
-			Vectordirec.x = posMouse.x - nave.x;
-			Vectordirec.y = posMouse.y - nave.y;
-
-
-			rotation = atan(Vectordirec.y / Vectordirec.x) * 180 / PI;
-
-			/*direccionNormalizada = vectorDireccion /modulo(vectorDireccion)*/
-			Vectornormalizado = Vector2Normalize(Vectordirec);
-			//check input
-			//update
-
-			if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+			Pausa(pausa);
+			if (!pausa)
 			{
-				/*aceleracionNave += direccionNormalizada*/
-				Aceleracion.x += Vectornormalizado.x * 0.2f;
-				Aceleracion.y += Vectornormalizado.y * 0.2f;
+				posMouse = GetMousePosition();
 
-				
-
-				Wall(nave);
+				/*Vectordirec = posMouse - posNave;*/
+				Vectordirec.x = posMouse.x - nave.x;
+				Vectordirec.y = posMouse.y - nave.y;
 
 
-			}
+				rotation = atan(Vectordirec.y / Vectordirec.x) * 180 / PI;
 
-			//sacandolo del if de arriba la nave ahora posee inercia a la hora de dejar de mantener presionado el click
-			/*nuevaPosNave = posNave + aceleracionNave * tiempoEntreFrames*/
-			nave.x = nave.x + Aceleracion.x * GetFrameTime();
-			nave.y = nave.y + Aceleracion.y * GetFrameTime();
+				/*direccionNormalizada = vectorDireccion /modulo(vectorDireccion)*/
+				Vectornormalizado = Vector2Normalize(Vectordirec);
+				//check input
+				//update
 
-			if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-			{
+				if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+				{
+					/*aceleracionNave += direccionNormalizada*/
+					Aceleracion.x += Vectornormalizado.x * 0.2f;
+					Aceleracion.y += Vectornormalizado.y * 0.2f;
+
+
+
+					Wall(nave);
+
+
+				}
+
+				//sacandolo del if de arriba la nave ahora posee inercia a la hora de dejar de mantener presionado el click
+				/*nuevaPosNave = posNave + aceleracionNave * tiempoEntreFrames*/
+				nave.x = nave.x + Aceleracion.x * GetFrameTime();
+				nave.y = nave.y + Aceleracion.y * GetFrameTime();
+
+				if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+				{
+					for (int i = 0; i < NAVE_BALAS_MAX; i++)
+					{
+						if (!bala[i].dispara)
+						{
+							bala[i].x = nave.x;
+							bala[i].y = nave.y;
+							bala[i].dispara = true;
+							bala[i].velocidad_x = Vectornormalizado.x * 0.08f;
+							bala[i].velocidad_y = Vectornormalizado.y * 0.08f;
+							bala[i].rotation = rotation;
+							break;
+
+						}
+					}
+				}
+
 				for (int i = 0; i < NAVE_BALAS_MAX; i++)
 				{
-					if (!bala[i].dispara)
+					if (bala[i].dispara)
 					{
-						bala[i].x = nave.x;
-						bala[i].y = nave.y;
-						bala[i].dispara = true;
-						bala[i].velocidad_x = Vectornormalizado.x* 0.08f;
-						bala[i].velocidad_y = Vectornormalizado.y *0.08f;
-						bala[i].rotation = rotation;
-						break;
-
+						bala[i].spawnVidaBala++;
 					}
 				}
-			}
 
-			for (int i = 0; i < NAVE_BALAS_MAX; i++)
-			{
-				if (bala[i].dispara)
+				for (int i = 0; i < NAVE_BALAS_MAX; i++)
 				{
-					bala[i].spawnVidaBala++; 
-				}
-			}
+					if (bala[i].dispara)
+					{
+						//movimiento de la bala
+						bala[i].x += bala[i].velocidad_x + Vectornormalizado.x * GetFrameTime();
+						bala[i].y += bala[i].velocidad_y + Vectornormalizado.y * GetFrameTime();
 
-			for (int i = 0; i < NAVE_BALAS_MAX; i++)
-			{
-				if (bala[i].dispara)
+
+
+						//desaparicion de balas cuando sale de la pantalla
+						if (bala[i].x > SCREEN_WIDTH)
+						{
+							bala[i].dispara = false;
+							bala[i].spawnVidaBala = 0;
+						}
+						else if (bala[i].x < 0)
+						{
+							bala[i].dispara = false;
+							bala[i].spawnVidaBala = 0;
+						}
+						if (bala[i].y > SCREEN_HEIGHT)
+						{
+							bala[i].dispara = false;
+							bala[i].spawnVidaBala = 0;
+						}
+
+						else if (bala[i].y < 0)
+						{
+							bala[i].dispara = false;
+							bala[i].spawnVidaBala = 0;
+						}
+
+						if (bala[i].spawnVidaBala >= TIEMPO_BALA)
+						{
+							bala[i].x = 0;
+							bala[i].y = 0;
+							bala[i].velocidad_x = 0;
+							bala[i].velocidad_y = 0;
+							bala[i].spawnVidaBala = 0;
+							bala[i].dispara = false;
+
+						}
+					}
+				}
+				for (int i = 0; i < MAX_METEORO_GRANDE; i++)
 				{
-					//movimiento de la bala
-					bala[i].x += bala[i].velocidad_x + Vectornormalizado.x*GetFrameTime();
-					bala[i].y += bala[i].velocidad_y + Vectornormalizado.y*GetFrameTime();
-
-					
-
-					//desaparicion de balas cuando sale de la pantalla
-					if (bala[i].x > SCREEN_WIDTH )
+					if (meteoroGrande[i].activo)
 					{
-						bala[i].dispara = false;
-						bala[i].spawnVidaBala = 0;
-					}
-					else if (bala[i].x < 0 )
-					{
-						bala[i].dispara = false;
-						bala[i].spawnVidaBala = 0;
-					}
-					if (bala[i].y > SCREEN_HEIGHT )
-					{
-						bala[i].dispara = false;
-						bala[i].spawnVidaBala = 0;
-					}
+						meteoroGrande[i].position.x += meteoroGrande[i].velocidad.x;
+						meteoroGrande[i].position.y += meteoroGrande[i].velocidad.y;
 
-					else if (bala[i].y < 0 )
-					{
-						bala[i].dispara = false;
-						bala[i].spawnVidaBala = 0;
-					}
+						if (meteoroGrande[i].position.x > SCREEN_WIDTH + meteoroGrande[i].radio)
+						{
+							meteoroGrande[i].position.x = -(meteoroGrande[i].radio);
+						}
+						else if (meteoroGrande[i].position.x < 0 - meteoroGrande[i].radio)
+						{
+							meteoroGrande[i].position.x = SCREEN_WIDTH + meteoroGrande[i].radio;
+						}
 
-					if (bala[i].spawnVidaBala >= TIEMPO_BALA)
-					{
-						bala[i].x = 0;
-						bala[i].y = 0;
-						bala[i].velocidad_x = 0;
-						bala[i].velocidad_y = 0;
-						bala[i].spawnVidaBala = 0;
-						bala[i].dispara = false;
-
+						if (meteoroGrande[i].position.y > SCREEN_HEIGHT + meteoroGrande[i].radio)
+						{
+							meteoroGrande[i].position.y = -(meteoroGrande[i].radio);
+						}
+						else if (meteoroGrande[i].position.y < 0 - meteoroGrande[i].radio)
+						{
+							meteoroGrande[i].position.y = SCREEN_HEIGHT + meteoroGrande[i].radio;
+						}
 					}
 				}
-			}
-		 
+
+				for (int i = 0; i < MAX_METEORO_MEDIANO; i++)
+				{
+					if (meteoroMediano[i].activo)
+					{
+						meteoroMediano[i].position.x += meteoroMediano[i].velocidad.x;
+						meteoroMediano[i].position.y += meteoroMediano[i].velocidad.y;
+
+						if (meteoroMediano[i].position.x > SCREEN_WIDTH + meteoroMediano[i].radio)
+						{
+							meteoroMediano[i].position.x = -(meteoroMediano[i].radio);
+						}
+						else if (meteoroMediano[i].position.x < 0 - meteoroMediano[i].radio)
+						{
+							meteoroMediano[i].position.x = SCREEN_WIDTH + meteoroMediano[i].radio;
+						}
+
+						if (meteoroMediano[i].position.y > SCREEN_HEIGHT + meteoroMediano[i].radio)
+						{
+							meteoroMediano[i].position.y = -(meteoroMediano[i].radio);
+						}
+						else if (meteoroMediano[i].position.y < 0 - meteoroMediano[i].radio)
+						{
+							meteoroMediano[i].position.y = SCREEN_HEIGHT + meteoroMediano[i].radio;
+						}
+					}
+
+				}
+				for (int i = 0; i < MAX_METEORO_CHICO; i++)
+				{
+					if (meteoroChico[i].activo)
+					{
+						meteoroChico[i].position.x += meteoroChico[i].velocidad.x;
+						meteoroChico[i].position.y += meteoroChico[i].velocidad.y;
+
+						if (meteoroChico[i].position.x > SCREEN_WIDTH + meteoroChico[i].radio)
+						{
+							meteoroChico[i].position.x = -(meteoroChico[i].radio);
+						}
+						else if (meteoroChico[i].position.x < 0 - meteoroChico[i].radio)
+						{
+							meteoroChico[i].position.x = SCREEN_WIDTH + meteoroChico[i].radio;
+						}
+
+						if (meteoroChico[i].position.y > SCREEN_HEIGHT + meteoroChico[i].radio)
+						{
+							meteoroChico[i].position.y = -(meteoroChico[i].radio);
+						}
+						else if (meteoroChico[i].position.y < 0 - meteoroChico[i].radio)
+						{
+							meteoroChico[i].position.y = SCREEN_HEIGHT + meteoroChico[i].radio;
+						}
+					}
+
+				}
 		}
 		
-		for (int i = 0; i < MAX_METEORO_GRANDE; i++)
-		{
-			if (meteoroGrande[i].activo)
-			{
-				meteoroGrande[i].position.x += meteoroGrande[i].velocidad.x;
-				meteoroGrande[i].position.y += meteoroGrande[i].velocidad.y;
-
-				if (meteoroGrande[i].position.x > SCREEN_WIDTH + meteoroGrande[i].radio)
-				{
-					meteoroGrande[i].position.x = -(meteoroGrande[i].radio);
-				}
-				else if(meteoroGrande[i].position.x < 0 - meteoroGrande[i].radio)
-				{
-					meteoroGrande[i].position.x = SCREEN_WIDTH + meteoroGrande[i].radio;
-				}
-
-				if (meteoroGrande[i].position.y>SCREEN_HEIGHT+meteoroGrande[i].radio)
-				{
-					meteoroGrande[i].position.y = -(meteoroGrande[i].radio);
-				}
-				else if (meteoroGrande[i].position.y < 0 - meteoroGrande[i].radio)
-				{
-					meteoroGrande[i].position.y = SCREEN_HEIGHT + meteoroGrande[i].radio;
-				}
-			}
-		}
-
-		for (int i = 0; i < MAX_METEORO_MEDIANO; i++)
-		{
-			if (meteoroMediano[i].activo)
-			{
-				meteoroMediano[i].position.x += meteoroMediano[i].velocidad.x;
-				meteoroMediano[i].position.y += meteoroMediano[i].velocidad.y;
-
-				if (meteoroMediano[i].position.x>SCREEN_WIDTH+meteoroMediano[i].radio)
-				{
-					meteoroMediano[i].position.x = -(meteoroMediano[i].radio);
-				}
-				else if (meteoroMediano[i].position.x < 0 - meteoroMediano[i].radio)
-				{
-					meteoroMediano[i].position.x = SCREEN_WIDTH + meteoroMediano[i].radio;
-				}
-
-				if (meteoroMediano[i].position.y > SCREEN_HEIGHT + meteoroMediano[i].radio)
-				{
-					meteoroMediano[i].position.y = -(meteoroMediano[i].radio);
-				}
-				else if (meteoroMediano[i].position.y < 0 - meteoroMediano[i].radio)
-				{
-					meteoroMediano[i].position.y = SCREEN_HEIGHT + meteoroMediano[i].radio;
-				}
-			}
-
-		}
-		for (int i = 0; i < MAX_METEORO_CHICO; i++)
-		{
-			if (meteoroChico[i].activo)
-			{
-				meteoroChico[i].position.x += meteoroChico [i].velocidad.x;
-				meteoroChico[i].position.y += meteoroChico [i].velocidad.y;
-
-				if (meteoroChico[i].position.x > SCREEN_WIDTH + meteoroChico[i].radio)
-				{	
-					meteoroChico[i].position.x = -(meteoroChico[i].radio);
-				}
-				else if (meteoroChico[i].position.x < 0 - meteoroChico[i].radio)
-				{
-					meteoroChico[i].position.x = SCREEN_WIDTH + meteoroChico[i].radio;
-				}
-
-				if (meteoroChico[i].position.y > SCREEN_HEIGHT + meteoroChico[i].radio)
-				{
-					meteoroChico[i].position.y = -(meteoroChico[i].radio);
-				}
-				else if (meteoroChico[i].position.y < 0 - meteoroChico[i].radio)
-				{
-					meteoroChico[i].position.y = SCREEN_HEIGHT + meteoroChico[i].radio;
-				}
-			}
-
-		}
+	}
+		
+		
 
 
 		
@@ -483,80 +489,81 @@ void Pausa(bool &pausa)
 		//1 true
 	}
 }
-//void DrawMenu(Rectangle cursor, Rectangle juego, Rectangle creditos, Rectangle instrucciones)
-//{
-//	DrawRectangleRec(cursor, RED);
-//	DrawRectangleRec(juego, RED);
-//	DrawRectangleRec(creditos, RED);
-//	DrawRectangleRec(instrucciones, RED);
-//
-//}
+void DrawMenu(Rectangle cursor, Rectangle juego, Rectangle creditos, Rectangle instrucciones)
+{
+	DrawRectangleRec(cursor, RED);
+	DrawRectangleRec(juego, RED);
+	DrawRectangleRec(creditos, RED);
+	DrawRectangleRec(instrucciones, RED);
 
-//void TextMenu()
-//{
-//	/*DrawText("ASTEROID", GetScreenWidth() / 2 -290, 100, 100, WHITE);
-//	DrawText("CREDITOS", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 200, 30, WHITE);
-//	DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 +70, 30, WHITE);
-//	DrawText("JUGAR", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 -50, 30, WHITE);*/
-//	
-//
-//}
+}
 
-//void Menu() {
-//
-//	Rectangle cursor = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2)-250, static_cast<int>(GetScreenHeight()) / static_cast <float>(2)+200, 5, 5 };
-//	Rectangle juego = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) - 90, 250, 100 };
-//	Rectangle instruciones = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) + 35, 250, 100 };
-//	Rectangle creditos = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) + 160, 250, 100 };
-//
-//	cursor.x = GetMouseX() - cursor.width / 2;
-//	cursor.y = GetMouseY() - cursor.height / 2;
-//
-//	DrawMenu(cursor, juego, creditos, instruciones);
-//	TextMenu();
-//
-//	
-//	Reglas(instruciones, cursor);
-//	Jugar(juego, cursor);
-//	Creditos( creditos, cursor);
-//
-//}
+void TextMenu()
+{
+	DrawText("ASTEROID", GetScreenWidth() / 2 -290, 100, 100, WHITE);
+	DrawText("CREDITOS", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 200, 30, WHITE);
+	DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 +70, 30, WHITE);
+	DrawText("JUGAR", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 -50, 30, WHITE);
+	
 
-//void Jugar(Rectangle juego, Rectangle caja)
-//{
-//	if (CheckCollisionRecs(juego, caja))
-//	{
-//		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
-//		{
-//			DrawRectangleRec(juego, YELLOW);
-//			DrawText("JUGAR", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 - 50, 30, WHITE);
-//		}
-//		
-//	}
-//}
-//
-//void Reglas(Rectangle instrucciones, Rectangle caja)
-//{
-//	if (CheckCollisionRecs(instrucciones, caja))
-//	{
-//		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
-//		{
-//			DrawRectangleRec(instrucciones, YELLOW);
-//			DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 + 70, 30, WHITE);
-//		}
-//
-//	}
-//}
-//
-//void Creditos(Rectangle creditos, Rectangle cursor)
-//{
-//	if (CheckCollisionRecs(creditos, cursor))
-//	{
-//		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
-//		{
-//			DrawRectangleRec(creditos, YELLOW);
-//			DrawText("CREDITOS", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 200, 30, WHITE);
-//		}
-//
-//	}
-//}
+}
+
+void Menu() {
+
+	Rectangle cursor = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2)-250, static_cast<int>(GetScreenHeight()) / static_cast <float>(2)+200, 5, 5 };
+	Rectangle juego = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) - 90, 250, 100 };
+	Rectangle instruciones = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) + 35, 250, 100 };
+	Rectangle creditos = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) + 160, 250, 100 };
+
+	cursor.x = GetMouseX() - cursor.width / 2;
+	cursor.y = GetMouseY() - cursor.height / 2;
+
+	DrawMenu(cursor, juego, creditos, instruciones);
+	TextMenu();
+
+	
+	Reglas(instruciones, cursor);
+	Jugar(juego, cursor);
+	Creditos( creditos, cursor);
+
+}
+
+void Jugar(Rectangle juego, Rectangle caja)
+{
+	if (CheckCollisionRecs(juego, caja))
+	{
+		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+		{
+			DrawRectangleRec(juego, YELLOW);
+			DrawText("JUGAR", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 - 50, 30, WHITE);
+			gameplay = true;
+		}
+		
+	}
+}
+
+void Reglas(Rectangle instrucciones, Rectangle caja)
+{
+	if (CheckCollisionRecs(instrucciones, caja))
+	{
+		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+		{
+			DrawRectangleRec(instrucciones, YELLOW);
+			DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 + 70, 30, WHITE);
+		}
+
+	}
+}
+
+void Creditos(Rectangle creditos, Rectangle cursor)
+{
+	if (CheckCollisionRecs(creditos, cursor))
+	{
+		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+		{
+			DrawRectangleRec(creditos, YELLOW);
+			DrawText("CREDITOS", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 200, 30, WHITE);
+		}
+
+	}
+}
