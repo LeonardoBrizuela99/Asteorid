@@ -32,10 +32,9 @@ enum  SCREEN
 };
 
 
-struct circul
+struct BALA
 {
-	float x;
-	float y;
+	Vector2 position;
 	float velocidad_x;
 	float velocidad_y;
 	float radio;
@@ -60,7 +59,7 @@ struct Meteoro
 //	int Widht=25;
 //	int Height=25;
 //};
-circul bala[NAVE_BALAS_MAX] = { 0 };
+BALA bala[NAVE_BALAS_MAX] = { 0 };
 Meteoro meteoroGrande[MAX_METEORO_GRANDE] = { 0 };
 Meteoro meteoroMediano[MAX_METEORO_MEDIANO] = { 0 };
 Meteoro meteoroChico[MAX_METEORO_CHICO] = { 0 };
@@ -97,8 +96,8 @@ int main()
 	int pantalla =MENU;
 
 	//int contadorMeteorosDestruido = 0;
-	//int cotadorMeterorosPequeños = 0;
-	//int cotadorMeterorosMedioanos = 0;
+	////int cotadorMeterorosPequeños = 0;
+	int contadorMeterorosMedioanos = 0;
 
 	//Texture2D texture = LoadTexture("res/ufoBlue.png");
 	bool pausa = false;
@@ -183,8 +182,8 @@ int main()
 
 	for (int i = 0; i < NAVE_BALAS_MAX; i++)
 	{
-		bala[i].x = 0;
-		bala[i].y = 0;
+		bala[i].position.x = 0;
+		bala[i].position.y = 0;
 		bala[i].velocidad_x = 0.01f;
 		bala[i].velocidad_y = 0.01f;
 		bala[i].radio = 2.0f;
@@ -268,8 +267,8 @@ int main()
 					{
 						if (!bala[i].dispara)
 						{
-							bala[i].x = nave.x;
-							bala[i].y = nave.y;
+							bala[i].position.x = nave.x;
+							bala[i].position.y = nave.y;
 							bala[i].dispara = true;
 							bala[i].velocidad_x = Vectornormalizado.x * 0.08f;
 							bala[i].velocidad_y = Vectornormalizado.y * 0.08f;
@@ -293,29 +292,29 @@ int main()
 					if (bala[i].dispara)
 					{
 						//movimiento de la bala
-						bala[i].x += bala[i].velocidad_x + Vectornormalizado.x * GetFrameTime();
-						bala[i].y += bala[i].velocidad_y + Vectornormalizado.y * GetFrameTime();
+						bala[i].position.x += bala[i].velocidad_x + Vectornormalizado.x * GetFrameTime();
+						bala[i].position.y += bala[i].velocidad_y + Vectornormalizado.y * GetFrameTime();
 
 
 
 						//desaparicion de balas cuando sale de la pantalla
-						if (bala[i].x > SCREEN_WIDTH)
+						if (bala[i].position.x > SCREEN_WIDTH)
 						{
 							bala[i].dispara = false;
 							bala[i].spawnVidaBala = 0;
 						}
-						else if (bala[i].x < 0)
+						else if (bala[i].position.x < 0)
 						{
 							bala[i].dispara = false;
 							bala[i].spawnVidaBala = 0;
 						}
-						if (bala[i].y > SCREEN_HEIGHT)
+						if (bala[i].position.y > SCREEN_HEIGHT)
 						{
 							bala[i].dispara = false;
 							bala[i].spawnVidaBala = 0;
 						}
 
-						else if (bala[i].y < 0)
+						else if (bala[i].position.y < 0)
 						{
 							bala[i].dispara = false;
 							bala[i].spawnVidaBala = 0;
@@ -323,8 +322,8 @@ int main()
 
 						if (bala[i].spawnVidaBala >= TIEMPO_BALA)
 						{
-							bala[i].x = 0;
-							bala[i].y = 0;
+							bala[i].position.x = 0;
+							bala[i].position.y = 0;
 							bala[i].velocidad_x = 0;
 							bala[i].velocidad_y = 0;
 							bala[i].spawnVidaBala = 0;
@@ -415,6 +414,9 @@ int main()
 
 				}
 
+
+
+				//colision de nave con meteoro
 				for (int i = 0; i < MAX_METEORO_GRANDE; i++)
 				{
 					if(CheckCollisionCircleRec(meteoroGrande[i].position, meteoroGrande[i].radio, nave)&&meteoroGrande[i].activo)
@@ -424,6 +426,59 @@ int main()
 						nave.y = SCREEN_HEIGHT / 2.0f;
 					}
 
+				}
+				for (int i = 0; i < MAX_METEORO_MEDIANO; i++)
+				{
+					if (CheckCollisionCircleRec(meteoroMediano[i].position, meteoroMediano[i].radio, nave) && meteoroMediano[i].activo)
+					{
+						nave_vida--;
+						nave.x = SCREEN_WIDTH / 2.0f;
+						nave.y = SCREEN_HEIGHT / 2.0f;
+					}
+
+				}
+				for (int i = 0; i < MAX_METEORO_CHICO; i++)
+				{
+					if (CheckCollisionCircleRec(meteoroChico[i].position, meteoroChico[i].radio, nave) && meteoroChico[i].activo)
+					{
+						nave_vida--;
+						nave.x = SCREEN_WIDTH / 2.0f;
+						nave.y = SCREEN_HEIGHT / 2.0f;
+					}
+
+				}
+
+				for (int i = 0; i < NAVE_BALAS_MAX; i++)
+				{
+					if ((bala[i].dispara))
+					{
+						for (int a = 0; a < MAX_METEORO_GRANDE; a++)
+						{
+							if (meteoroGrande[a].activo && CheckCollisionCircles(bala[i].position,bala[i].radio,meteoroGrande[a].position, meteoroGrande[a].radio))
+							{
+								bala[i].dispara = false;
+								bala[i].spawnVidaBala=0;
+								meteoroGrande[a].activo = false;
+								for (int  j= 0; j < 2;j ++)
+								{
+									if (contadorMeterorosMedioanos % 2 == 0)
+									{
+										meteoroMediano[contadorMeterorosMedioanos].position = (meteoroGrande[a].position);
+										meteoroMediano[contadorMeterorosMedioanos].velocidad = /*static_cast<Vector2>*/{cos(bala[i].rotation * DEG2RAD) * METEORO_VELOCIDAD * -1, sin(bala[i].rotation * DEG2RAD) * METEORO_VELOCIDAD * -1};
+									}
+									else
+									{
+										meteoroMediano[contadorMeterorosMedioanos].position = (meteoroGrande[a].position);
+										meteoroMediano[contadorMeterorosMedioanos].velocidad = {cos(bala[i].rotation* DEG2RAD)* METEORO_VELOCIDAD, sin(bala[i].rotation* DEG2RAD)* METEORO_VELOCIDAD};
+
+									}
+									meteoroMediano[contadorMeterorosMedioanos].activo = true;
+									contadorMeterorosMedioanos++;
+								}
+								a = MAX_METEORO_GRANDE;
+							}
+						}
+					}
 				}
 			}
 
@@ -457,7 +512,7 @@ int main()
 			{
 				if (bala[i].dispara)
 				{
-					DrawCircle(static_cast <int>(bala[i].x), static_cast <int>(bala[i].y), bala[i].radio, WHITE);
+					DrawCircle(static_cast <int>(bala[i].position.x), static_cast <int>(bala[i].position.y), bala[i].radio, WHITE);
 				}
 			}
 
