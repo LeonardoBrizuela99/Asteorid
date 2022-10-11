@@ -547,6 +547,9 @@ int main()
 
 		case CREDITOS:
 
+			DrawText("CREDITOS:", GetScreenWidth() / 2 - 300, GetScreenHeight() / 2 + 200, 30, WHITE);
+			DrawText("LEONARDO BRIZUELA", GetScreenWidth() / 2 - 120, GetScreenHeight() / 2 + 200, 30, WHITE);
+
 			break;
 		
 		default:
@@ -663,8 +666,6 @@ void Pausa(bool &pausa, int& pantalla)
 		DrawRectangleRec(caja_pausa, PURPLE);
 		DrawText("PAUSA", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 - 50, 30, WHITE);
 
-		DrawRectangleRec(volverMenu, PURPLE);
-		DrawText("VOLVER AL MENU", GetScreenWidth() / 2 - 130, GetScreenHeight() / 2+ 80, 26, WHITE);
 		
 		if (CheckCollisionRecs(caja_pausa,cursor))
 		{
@@ -682,6 +683,9 @@ void Pausa(bool &pausa, int& pantalla)
 			}
 
 		}
+		DrawRectangleRec(volverMenu, PURPLE);
+		DrawText("VOLVER AL MENU", GetScreenWidth() / 2 - 130, GetScreenHeight() / 2 + 80, 26, WHITE);
+
 		if (CheckCollisionRecs(volverMenu, cursor))
 		{
 
@@ -691,7 +695,7 @@ void Pausa(bool &pausa, int& pantalla)
 			if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
 			{
 
-				DrawRectangleRec(caja_pausa, DARKPURPLE);
+				DrawRectangleRec(volverMenu, DARKPURPLE);
 				DrawText("VOLVER AL MENU", GetScreenWidth() / 2 - 130, GetScreenHeight() / 2 +80, 26, WHITE);
 				pantalla = MENU;
 				
