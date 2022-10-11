@@ -20,8 +20,16 @@ const int TIEMPO_BALA= 60000;
 const int MAX_METEORO_GRANDE = 4;
 const int MAX_METEORO_MEDIANO = 8;
 const int MAX_METEORO_CHICO= 16;
-const int METEORO_VELOCIDAD= 1;
+const int METEORO_VELOCIDAD= 250;
 
+enum  SCREEN
+{
+	MENU,
+	JUGAR,
+	INSTRUCCIONES,
+	CREDITOS, 
+
+};
 
 
 struct circul
@@ -69,11 +77,11 @@ Meteoro meteoroChico[MAX_METEORO_CHICO] = { 0 };
 void Wall(Rectangle& nave);
 void Pausa(bool& pausa);
 void TextMenu();
-void Menu();
+void Menu(int& pantalla);
 void DrawMenu(Rectangle cursor, Rectangle juego, Rectangle creditos, Rectangle instrucciones);
-void Jugar(Rectangle juego, Rectangle cursor);
-void Reglas(Rectangle instrucciones, Rectangle cursor);
-void Creditos(Rectangle creditos, Rectangle cursor);
+void Jugar(Rectangle juego, Rectangle cursor,int& pantalla);
+void Reglas(Rectangle instrucciones, Rectangle cursor,int& pantalla);
+void Creditos(Rectangle creditos, Rectangle cursor, int& pantalla);
 
 
 
@@ -84,6 +92,7 @@ int main()
 	int posx, posy = 0;
 	float velx, vely = 0;
 	bool rangocorrecto = 0;
+	int pantalla =MENU;
 
 	//int contadorMeteorosDestruido = 0;
 	//int cotadorMeterorosPequeños = 0;
@@ -203,13 +212,18 @@ int main()
 
 	while (!WindowShouldClose())
 	{
-		Menu();
-	
 		
+		
+		switch (pantalla)
+		{
 
+		case MENU:
 		
-		
-		
+			Menu(pantalla);
+			break;
+
+
+		case JUGAR:		
 			Pausa(pausa);
 			if (!pausa)
 			{
@@ -320,8 +334,8 @@ int main()
 				{
 					if (meteoroGrande[i].activo)
 					{
-						meteoroGrande[i].position.x += meteoroGrande[i].velocidad.x;
-						meteoroGrande[i].position.y += meteoroGrande[i].velocidad.y;
+						meteoroGrande[i].position.x += meteoroGrande[i].velocidad.x * GetFrameTime();
+						meteoroGrande[i].position.y += meteoroGrande[i].velocidad.y * GetFrameTime();
 
 						if (meteoroGrande[i].position.x > SCREEN_WIDTH + meteoroGrande[i].radio)
 						{
@@ -347,8 +361,8 @@ int main()
 				{
 					if (meteoroMediano[i].activo)
 					{
-						meteoroMediano[i].position.x += meteoroMediano[i].velocidad.x;
-						meteoroMediano[i].position.y += meteoroMediano[i].velocidad.y;
+						meteoroMediano[i].position.x += meteoroMediano[i].velocidad.x * GetFrameTime();
+						meteoroMediano[i].position.y += meteoroMediano[i].velocidad.y * GetFrameTime();
 
 						if (meteoroMediano[i].position.x > SCREEN_WIDTH + meteoroMediano[i].radio)
 						{
@@ -374,8 +388,8 @@ int main()
 				{
 					if (meteoroChico[i].activo)
 					{
-						meteoroChico[i].position.x += meteoroChico[i].velocidad.x;
-						meteoroChico[i].position.y += meteoroChico[i].velocidad.y;
+						meteoroChico[i].position.x += meteoroChico[i].velocidad.x * GetFrameTime();
+						meteoroChico[i].position.y += meteoroChico[i].velocidad.y * GetFrameTime();
 
 						if (meteoroChico[i].position.x > SCREEN_WIDTH + meteoroChico[i].radio)
 						{
@@ -398,52 +412,67 @@ int main()
 
 				}
 			}
-		
-	
-		
-		
 
 
+
+
+		
+			break;
+		case INSTRUCCIONES:
+
+			DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 + 70, 30, WHITE);
+			break;
+
+		case CREDITOS:
+
+			break;
+		
+		default:
+			break;
+		}
 		
 		BeginDrawing();
 
 	
 		//DrawTexture(texture, static_cast<int>(SCREEN_HEIGHT) / 2, static_cast<int>(SCREEN_WIDTH) / 2, WHITE);
-
-		DrawRectanglePro(nave, pivot, rotation, RED);
-
-		for (int i = 0; i < NAVE_BALAS_MAX; i++)
+		if (pantalla==JUGAR)
 		{
-			if (bala[i].dispara)
-			{
-				DrawCircle(static_cast <int>(bala[i].x), static_cast <int>(bala[i].y), bala[i].radio, WHITE);
-			}
-		}
+			DrawRectanglePro(nave, pivot, rotation, RED);
 
-		for (int i = 0; i < MAX_METEORO_GRANDE; i++)
-		{
-			if (meteoroGrande[i].activo)
+			for (int i = 0; i < NAVE_BALAS_MAX; i++)
 			{
-				DrawCircle(static_cast <int>(meteoroGrande[i].position.x), static_cast <int>(meteoroGrande[i].position.y), meteoroGrande[i].radio, WHITE);
-			}
-			
-		}
-		for (int i = 0; i < MAX_METEORO_MEDIANO; i++)
-		{
-			if (meteoroMediano[i].activo)
-			{
-				DrawCircle(static_cast <int>(meteoroMediano[i].position.x), static_cast <int>(meteoroMediano[i].position.y), meteoroMediano[i].radio, WHITE);
+				if (bala[i].dispara)
+				{
+					DrawCircle(static_cast <int>(bala[i].x), static_cast <int>(bala[i].y), bala[i].radio, WHITE);
+				}
 			}
 
-		}
-		for (int i = 0; i < MAX_METEORO_CHICO; i++)
-		{
-			if (meteoroChico[i].activo)
+			for (int i = 0; i < MAX_METEORO_GRANDE; i++)
 			{
-				DrawCircle(static_cast <int>(meteoroChico[i].position.x), static_cast <int>(meteoroChico[i].position.y), meteoroChico[i].radio, WHITE);
-			}
+				if (meteoroGrande[i].activo)
+				{
+					DrawCircle(static_cast <int>(meteoroGrande[i].position.x), static_cast <int>(meteoroGrande[i].position.y), meteoroGrande[i].radio, WHITE);
+				}
 
+			}
+			for (int i = 0; i < MAX_METEORO_MEDIANO; i++)
+			{
+				if (meteoroMediano[i].activo)
+				{
+					DrawCircle(static_cast <int>(meteoroMediano[i].position.x), static_cast <int>(meteoroMediano[i].position.y), meteoroMediano[i].radio, WHITE);
+				}
+
+			}
+			for (int i = 0; i < MAX_METEORO_CHICO; i++)
+			{
+				if (meteoroChico[i].activo)
+				{
+					DrawCircle(static_cast <int>(meteoroChico[i].position.x), static_cast <int>(meteoroChico[i].position.y), meteoroChico[i].radio, WHITE);
+				}
+
+			}
 		}
+		
 		
 		ClearBackground(BLACK);
 		EndDrawing();
@@ -490,10 +519,10 @@ void Pausa(bool &pausa)
 }
 void DrawMenu(Rectangle cursor, Rectangle juego, Rectangle creditos, Rectangle instrucciones)
 {
-	DrawRectangleRec(cursor, RED);
-	DrawRectangleRec(juego, RED);
-	DrawRectangleRec(creditos, RED);
-	DrawRectangleRec(instrucciones, RED);
+	DrawRectangleRec(cursor, PURPLE);
+	DrawRectangleRec(juego, PURPLE);
+	DrawRectangleRec(creditos, PURPLE);
+	DrawRectangleRec(instrucciones, PURPLE);
 
 }
 
@@ -507,7 +536,7 @@ void TextMenu()
 
 }
 
-void Menu() {
+void Menu(int& pantalla) {
 
 	Rectangle cursor = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2)-250, static_cast<int>(GetScreenHeight()) / static_cast <float>(2)+200, 5, 5 };
 	Rectangle juego = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) - 90, 250, 100 };
@@ -518,22 +547,27 @@ void Menu() {
 	cursor.y = GetMouseY() - cursor.height / 2;
 
 	DrawMenu(cursor, juego, creditos, instruciones);
+	//HideCursor();
 	TextMenu();
 
 	
-	Reglas(instruciones, cursor);
-	Jugar(juego, cursor);
-	Creditos( creditos, cursor);
+	Reglas(instruciones, cursor, pantalla);
+	Jugar(juego, cursor, pantalla);
+	Creditos( creditos, cursor, pantalla);
 
 }
 
-void Jugar(Rectangle juego, Rectangle caja)
+void Jugar(Rectangle juego, Rectangle caja, int& pantalla)
 {
 	if (CheckCollisionRecs(juego, caja))
-	{
+	{ 
+		DrawRectangleRec(juego, VIOLET);
+		DrawText("JUGAR", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 - 50, 30, WHITE);
+		
 		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 		{
-			DrawRectangleRec(juego, YELLOW);
+			pantalla = JUGAR;
+			DrawRectangleRec(juego, DARKPURPLE);
 			DrawText("JUGAR", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 - 50, 30, WHITE);
 			
 		}
@@ -541,27 +575,36 @@ void Jugar(Rectangle juego, Rectangle caja)
 	}
 }
 
-void Reglas(Rectangle instrucciones, Rectangle caja)
+void Reglas(Rectangle instrucciones, Rectangle caja, int& pantalla)
 {
 	if (CheckCollisionRecs(instrucciones, caja))
 	{
+		
+		DrawRectangleRec(instrucciones, VIOLET);
+		DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 + 70, 30, WHITE);
+
 		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 		{
-			DrawRectangleRec(instrucciones, YELLOW);
+			DrawRectangleRec(instrucciones, DARKPURPLE);
 			DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 + 70, 30, WHITE);
+			pantalla = INSTRUCCIONES;
 		}
 
 	}
 }
 
-void Creditos(Rectangle creditos, Rectangle cursor)
+void Creditos(Rectangle creditos, Rectangle cursor, int& pantalla)
 {
 	if (CheckCollisionRecs(creditos, cursor))
-	{
+	{ 
+		
+		DrawRectangleRec(creditos, VIOLET);
+		DrawText("CREDITOS", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 200, 30, WHITE);
 		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 		{
-			DrawRectangleRec(creditos, YELLOW);
+			DrawRectangleRec(creditos, DARKPURPLE);
 			DrawText("CREDITOS", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 200, 30, WHITE);
+			pantalla = CREDITOS;
 		}
 
 	}
