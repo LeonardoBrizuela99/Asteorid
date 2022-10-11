@@ -75,13 +75,15 @@ Meteoro meteoroChico[MAX_METEORO_CHICO] = { 0 };
 //
 //}
 void Wall(Rectangle& nave);
-void Pausa(bool& pausa);
+void Pausa(bool& pausa, int& pantalla);
 void TextMenu();
 void Menu(int& pantalla);
 void DrawMenu(Rectangle cursor, Rectangle juego, Rectangle creditos, Rectangle instrucciones);
 void Jugar(Rectangle juego, Rectangle cursor,int& pantalla);
 void Reglas(Rectangle instrucciones, Rectangle cursor,int& pantalla);
 void Creditos(Rectangle creditos, Rectangle cursor, int& pantalla);
+Rectangle Cursor(Rectangle& cursor);
+
 
 
 
@@ -106,7 +108,7 @@ int main()
 	nave.y = SCREEN_HEIGHT / 2.0f;
 	nave.width = 25;
 	nave.height = 25;
-	/*int nave_vida = 3;*/
+	int nave_vida = 3;
 
 	for (int i = 0; i < MAX_METEORO_GRANDE; i++)
 	{
@@ -224,9 +226,10 @@ int main()
 
 
 		case JUGAR:		
-			Pausa(pausa);
+			
 			if (!pausa)
 			{
+
 				posMouse = GetMousePosition();
 
 				/*Vectordirec = posMouse - posNave;*/
@@ -411,8 +414,18 @@ int main()
 					}
 
 				}
-			}
 
+				for (int i = 0; i < MAX_METEORO_GRANDE; i++)
+				{
+					if(CheckCollisionCircleRec(meteoroGrande[i].position, meteoroGrande[i].radio, nave)&&meteoroGrande[i].activo)
+					{
+						nave_vida--;
+						nave.x = SCREEN_WIDTH / 2.0f;
+						nave.y = SCREEN_HEIGHT / 2.0f;
+					}
+
+				}
+			}
 
 
 
@@ -435,6 +448,7 @@ int main()
 
 	
 		//DrawTexture(texture, static_cast<int>(SCREEN_HEIGHT) / 2, static_cast<int>(SCREEN_WIDTH) / 2, WHITE);
+
 		if (pantalla==JUGAR)
 		{
 			DrawRectanglePro(nave, pivot, rotation, RED);
@@ -471,6 +485,8 @@ int main()
 				}
 
 			}
+			Pausa(pausa, pantalla);
+
 		}
 		
 		
@@ -507,11 +523,61 @@ void Wall(Rectangle &nave)
 		nave.y = SCREEN_HEIGHT + nave.height;
 	}
 }
-void Pausa(bool &pausa)
+void Pausa(bool &pausa, int& pantalla)
 {
+	if (pausa == true)
+	{
+		Rectangle caja_pausa = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) - 90, 250, 100 }; 
+		Rectangle volverMenu = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) + 35, 250, 100 };
+		Rectangle cursor = { 0 };
+
+		cursor = Cursor(cursor);
+
+		DrawRectangleRec(caja_pausa, PURPLE);
+		DrawText("PAUSA", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 - 50, 30, WHITE);
+
+		DrawRectangleRec(volverMenu, PURPLE);
+		DrawText("VOLVER AL MENU", GetScreenWidth() / 2 - 130, GetScreenHeight() / 2+80, 26, WHITE);
+		
+		if (CheckCollisionRecs(caja_pausa,cursor))
+		{
+			
+			DrawRectangleRec(caja_pausa, VIOLET);
+			DrawText("PAUSA", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 - 50, 30, WHITE);
+
+			if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+			{
+				
+				DrawRectangleRec(caja_pausa, DARKPURPLE);
+				DrawText("PAUSA", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 - 50, 30, WHITE);
+				pausa = !pausa;
+
+			}
+
+		}
+		if (CheckCollisionRecs(volverMenu, cursor))
+		{
+
+			DrawRectangleRec(volverMenu, VIOLET);
+			DrawText("VOLVER AL MENU", GetScreenWidth() / 2 - 130, GetScreenHeight() / 2 +80,26, WHITE);
+
+			if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+			{
+
+				DrawRectangleRec(caja_pausa, DARKPURPLE);
+				DrawText("VOLVER AL MENU", GetScreenWidth() / 2 - 130, GetScreenHeight() / 2 +80, 26, WHITE);
+				pantalla = MENU;
+				
+
+			}
+
+		}
+
+	}
 	if (IsKeyPressed('P') || IsKeyPressed('p')||IsKeyPressed(KEY_ESCAPE))
 	{
 		pausa = !pausa;
+		
 		//cout << pause << endl;
 		//0 false
 		//1 true
@@ -538,13 +604,12 @@ void TextMenu()
 
 void Menu(int& pantalla) {
 
-	Rectangle cursor = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2)-250, static_cast<int>(GetScreenHeight()) / static_cast <float>(2)+200, 5, 5 };
 	Rectangle juego = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) - 90, 250, 100 };
 	Rectangle instruciones = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) + 35, 250, 100 };
 	Rectangle creditos = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) + 160, 250, 100 };
 
-	cursor.x = GetMouseX() - cursor.width / 2;
-	cursor.y = GetMouseY() - cursor.height / 2;
+	Rectangle cursor = { 0 };
+	cursor=Cursor(cursor);
 
 	DrawMenu(cursor, juego, creditos, instruciones);
 	//HideCursor();
@@ -608,4 +673,13 @@ void Creditos(Rectangle creditos, Rectangle cursor, int& pantalla)
 		}
 
 	}
+}
+
+Rectangle Cursor(Rectangle& cursor)
+{
+	Rectangle _cursor = {static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 250, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) + 200, 5, 5 };
+	cursor.x = GetMouseX() - cursor.width / 2;
+	cursor.y = GetMouseY() - cursor.height / 2;
+	return cursor;
+
 }
