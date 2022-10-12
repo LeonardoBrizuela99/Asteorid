@@ -94,7 +94,7 @@ int main()
 	int posx, posy = 0;
 	float velx, vely = 0;
 	bool rangocorrecto = 0;
-	int pantalla =MENU;
+	int pantalla= MENU;
 	bool victoria = false;
 
 	int contadorMeteorosDestruido = 0;
@@ -228,6 +228,7 @@ int main()
 
 
 		 case JUGAR:		
+
 			 if (!gameOver||!victoria)
 			 {
 				 if (!pausa)
@@ -541,8 +542,12 @@ int main()
 		
 			break;
 		case INSTRUCCIONES:
+		
+			
+				DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 + 70, 30, WHITE);
+			
 
-			DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 + 70, 30, WHITE);
+			
 			break;
 
 		case CREDITOS:
@@ -657,47 +662,50 @@ void Pausa(bool &pausa, int& pantalla)
 {
 	if (pausa == true)
 	{
-		Rectangle caja_pausa = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) - 90, 250, 100 }; 
-		Rectangle volverMenu = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) + 35, 250, 100 };
+		Rectangle caja_pausa = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 350, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) - 90, 250, 100 }; 
+		Rectangle volverMenu = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) +100, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) -90,250, 100 };
 		Rectangle cursor = { 0 };
 
 		cursor = Cursor(cursor);
 
 		DrawRectangleRec(caja_pausa, PURPLE);
-		DrawText("PAUSA", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 - 50, 30, WHITE);
+		DrawText("PAUSA", GetScreenWidth() / 2 - 280, GetScreenHeight() / 2 - 50, 30, WHITE);
 
 		
 		if (CheckCollisionRecs(caja_pausa,cursor))
 		{
 			
 			DrawRectangleRec(caja_pausa, VIOLET);
-			DrawText("PAUSA", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 - 50, 30, WHITE);
+			DrawText("PAUSA", GetScreenWidth() / 2 - 280, GetScreenHeight() / 2 - 50, 30, WHITE);
 
 			if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 			{
 				
 				DrawRectangleRec(caja_pausa, DARKPURPLE);
-				DrawText("PAUSA", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 - 50, 30, WHITE);
+				DrawText("PAUSA", GetScreenWidth() / 2 - 280, GetScreenHeight() / 2 - 50, 30, WHITE);
 				pausa = !pausa;
 
 			}
 
 		}
 		DrawRectangleRec(volverMenu, PURPLE);
-		DrawText("VOLVER AL MENU", GetScreenWidth() / 2 - 130, GetScreenHeight() / 2 + 80, 26, WHITE);
+		DrawText("VOLVER AL MENU", GetScreenWidth() / 2 +110, GetScreenHeight() / 2 - 50, 26, WHITE);
 
 		if (CheckCollisionRecs(volverMenu, cursor))
 		{
 
 			DrawRectangleRec(volverMenu, VIOLET);
-			DrawText("VOLVER AL MENU", GetScreenWidth() / 2 - 130, GetScreenHeight() / 2 +80,26, WHITE);
+			DrawText("VOLVER AL MENU", GetScreenWidth() / 2 +110, GetScreenHeight() / 2 -50,26, WHITE);
 
 			if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
 			{
 
 				DrawRectangleRec(volverMenu, DARKPURPLE);
-				DrawText("VOLVER AL MENU", GetScreenWidth() / 2 - 130, GetScreenHeight() / 2 +80, 26, WHITE);
+				DrawText("VOLVER AL MENU", GetScreenWidth() / 2 +110, GetScreenHeight() / 2 -50, 26, WHITE);
+				cout << pantalla << endl;
 				pantalla = MENU;
+				cout << pantalla << endl;
+
 				
 
 			}
