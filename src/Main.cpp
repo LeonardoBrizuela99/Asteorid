@@ -95,11 +95,12 @@ int main()
 	float velx, vely = 0;
 	bool rangocorrecto = 0;
 	int pantalla= MENU;
-	bool victoria = false;
+	//bool victoria = false;
+	int puntaje = 0;
 
 	int contadorMeteorosDestruido = 0;
 	int contadorMeterorosChicos = 0;
-	int contadorMeterorosMedioanos = 0;
+	int contadorMeterorosMedianos = 0;
 
 	//Texture2D texture = LoadTexture("res/ufoBlue.png");
 	bool pausa = false;
@@ -229,10 +230,102 @@ int main()
 
 		 case JUGAR:		
 
-			 if (!gameOver||!victoria)
+			 if (!gameOver)
 			 {
 				 if (!pausa)
 				 {
+					 if (contadorMeteorosDestruido >= MAX_METEORO_CHICO + MAX_METEORO_GRANDE + MAX_METEORO_MEDIANO)
+					 {
+						 for (int i = 0; i < MAX_METEORO_GRANDE; i++)
+						 {
+							 posx = GetRandomValue(0, static_cast <int>(SCREEN_WIDTH));
+
+							 while (!rangocorrecto)
+							 {
+								 if (posx > SCREEN_WIDTH / 2 - 150 && posx < SCREEN_WIDTH / 2 + 150)
+								 {
+									 posx = GetRandomValue(0, static_cast <int>(SCREEN_WIDTH));
+								 }
+								 else
+								 {
+									 rangocorrecto = true;
+								 }
+							 }
+							 rangocorrecto = false;
+							 posy = GetRandomValue(0, static_cast <int> (SCREEN_HEIGHT));
+							 while (!rangocorrecto)
+							 {
+								 if (posy > SCREEN_HEIGHT / 2 - 150 && posy < SCREEN_HEIGHT / 2 + 150)
+								 {
+									 posy = GetRandomValue(0, static_cast <int>(SCREEN_HEIGHT));
+								 }
+								 else
+								 {
+									 rangocorrecto = true;
+								 }
+							 }
+							 meteoroGrande[i].position.x = static_cast <float>(posx);
+							 meteoroGrande[i].position.y = static_cast <float>(posy);
+
+							 rangocorrecto = false;
+
+							 velx = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD), /*static_cast <int>*/(METEORO_VELOCIDAD));
+							 vely = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD), /*static_cast <int>*/(METEORO_VELOCIDAD));
+
+							 if (velx == 0 && vely == 0)
+							 {
+								 velx = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD), /*static_cast <int>*/(METEORO_VELOCIDAD));
+								 vely = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD), /*static_cast <int>*/(METEORO_VELOCIDAD));
+
+							 }
+							 else
+							 {
+								 rangocorrecto = false;
+							 }
+
+							 meteoroGrande[i].velocidad.x = static_cast <float>(velx);
+							 meteoroGrande[i].velocidad.y = static_cast <float>(vely);
+							 meteoroGrande[i].radio = 40.0f;
+							 meteoroGrande[i].activo = true;
+						 }
+						 for (int i = 0; i < MAX_METEORO_MEDIANO; i++)
+						 {
+							 meteoroMediano[i].position.x = -100;
+							 meteoroMediano[i].position.y = -100;
+							 meteoroMediano[i].velocidad.x = 0;
+							 meteoroMediano[i].velocidad.y = 0;
+							 meteoroMediano[i].radio = 20.0f;
+							 meteoroMediano[i].activo = false;
+						 }
+						 for (int i = 0; i < MAX_METEORO_CHICO; i++)
+						 {
+							 meteoroChico[i].position.x = -100;
+							 meteoroChico[i].position.y = -100;
+							 meteoroChico[i].velocidad.x = 0;
+							 meteoroChico[i].velocidad.y = 0;
+							 meteoroChico[i].radio = 10.0f;
+							 meteoroChico[i].activo = false;
+						 }
+
+						 /*for (int i = 0; i < NAVE_BALAS_MAX; i++)
+						 {
+							 bala[i].position.x = 0;
+							 bala[i].position.y = 0;
+							 bala[i].velocidad_x = 0.01f;
+							 bala[i].velocidad_y = 0.01f;
+							 bala[i].radio = 2.0f;
+							 bala[i].dispara = false;
+							 bala[i].spawnVidaBala = 0;
+						 }*/
+						 contadorMeterorosMedianos = 0;
+						 contadorMeterorosChicos = 0;
+
+						 cout << contadorMeteorosDestruido << endl;
+						 contadorMeteorosDestruido = 0;
+						 cout << contadorMeteorosDestruido << endl;
+
+					 }
+
 
 					 posMouse = GetMousePosition();
 
@@ -273,8 +366,8 @@ int main()
 								 bala[i].position.x = nave.x;
 								 bala[i].position.y = nave.y;
 								 bala[i].dispara = true;
-								 bala[i].velocidad_x = Vectornormalizado.x * 0.08f;
-								 bala[i].velocidad_y = Vectornormalizado.y * 0.08f;
+								 bala[i].velocidad_x = Vectornormalizado.x * 0.3f;//0.08f
+								 bala[i].velocidad_y = Vectornormalizado.y * 0.3f;//0.08f
 								 bala[i].rotation = rotation;
 								 break;
 
@@ -462,22 +555,27 @@ int main()
 									 bala[i].dispara = false;
 									 bala[i].spawnVidaBala = 0;
 									 meteoroGrande[a].activo = false;
+									 puntaje +=10;
+									
+
 									 for (int j = 0; j < 2; j++)
 									 {
-										 if (contadorMeterorosMedioanos % 2 == 0)
+										 if (contadorMeterorosMedianos % 2 == 0)
 										 {
-											 meteoroMediano[contadorMeterorosMedioanos].position = (meteoroGrande[a].position);
-											 meteoroMediano[contadorMeterorosMedioanos].velocidad = { cos(bala[i].rotation * DEG2RAD) * METEORO_VELOCIDAD * -1, sin(bala[i].rotation * DEG2RAD) * METEORO_VELOCIDAD * -1 };
+											 meteoroMediano[contadorMeterorosMedianos].position = (meteoroGrande[a].position);
+											 meteoroMediano[contadorMeterorosMedianos].velocidad = { cos(bala[i].rotation * DEG2RAD) * METEORO_VELOCIDAD * -1, sin(bala[i].rotation * DEG2RAD) * METEORO_VELOCIDAD * -1 };
 										 }
 										 else
 										 {
-											 meteoroMediano[contadorMeterorosMedioanos].position = (meteoroGrande[a].position);
-											 meteoroMediano[contadorMeterorosMedioanos].velocidad = { cos(bala[i].rotation * DEG2RAD) * METEORO_VELOCIDAD, sin(bala[i].rotation * DEG2RAD) * METEORO_VELOCIDAD };
+											 meteoroMediano[contadorMeterorosMedianos].position = (meteoroGrande[a].position);
+											 meteoroMediano[contadorMeterorosMedianos].velocidad = { cos(bala[i].rotation * DEG2RAD) * METEORO_VELOCIDAD, sin(bala[i].rotation * DEG2RAD) * METEORO_VELOCIDAD };
 
 										 }
-										 meteoroMediano[contadorMeterorosMedioanos].activo = true;
-										 contadorMeterorosMedioanos++;
+										 meteoroMediano[contadorMeterorosMedianos].activo = true;
+										 contadorMeterorosMedianos++;
 									 }
+									 contadorMeteorosDestruido++;
+									 cout << contadorMeteorosDestruido << endl;
 									 a = MAX_METEORO_GRANDE;
 								 }
 							 }
@@ -489,6 +587,8 @@ int main()
 									 bala[i].dispara = false;
 									 bala[i].spawnVidaBala = 0;
 									 meteoroMediano[b].activo = false;
+									 puntaje += 20;
+
 									 for (int j = 0; j < 2; j++)
 									 {
 										 if (contadorMeterorosChicos % 2 == 0)
@@ -504,7 +604,12 @@ int main()
 										 }
 										 meteoroChico[contadorMeterorosChicos].activo = true;
 										 contadorMeterorosChicos++;
+
 									 }
+									 contadorMeteorosDestruido++;
+									
+									 cout << contadorMeteorosDestruido << endl;
+
 									 b = MAX_METEORO_MEDIANO;
 								 }
 							 }
@@ -518,17 +623,24 @@ int main()
 									 meteoroChico[c].activo = false;
 									 contadorMeteorosDestruido++;
 									 c = MAX_METEORO_CHICO;
+									 puntaje += 50;
+									 
+									 cout << contadorMeteorosDestruido << endl;
 
 								 }
 							 }
+
 						 }
 					 }
 				 }
-				 if (contadorMeteorosDestruido == MAX_METEORO_GRANDE + MAX_METEORO_MEDIANO+ MAX_METEORO_CHICO)
-				 {
-					 victoria = true;
-				 }
-				 else if (nave_vida <= 0)
+
+				
+				
+				 
+					/* victoria = true;
+					 pantalla = MENU;*/
+				 
+				 if (nave_vida <= 0)
 				 {
 					 gameOver = true;
 					 pantalla = MENU;
@@ -569,23 +681,7 @@ int main()
 		if (pantalla==JUGAR)
 		{
 			DrawRectanglePro(nave, pivot, rotation, RED);
-			for (int i = 0; i < nave_vida; i++)
-			{
-				if (nave_vida==3)
-				{
-					DrawRectangle(0, 0, 10, 10, RED);
-					DrawRectangle(25, 0, 10, 10, RED);
-					DrawRectangle(50, 0, 10, 10, RED);
-				}else if (nave_vida == 2)
-				{
-					DrawRectangle(0, 0, 10, 10, RED);
-					DrawRectangle(25, 0, 10, 10, RED);		
-				}else if (nave_vida == 1)
-				{
-					DrawRectangle(0, 0, 10, 10, RED);
-				}
-				
-			}
+			
 			
 
 			for (int i = 0; i < NAVE_BALAS_MAX; i++)
@@ -620,6 +716,27 @@ int main()
 				}
 
 			}
+
+			for (int i = 0; i < nave_vida; i++)
+			{
+				if (nave_vida == 3)
+				{
+					DrawRectangle(0, 0, 10, 10, RED);
+					DrawRectangle(25, 0, 10, 10, RED);
+					DrawRectangle(50, 0, 10, 10, RED);
+				}
+				else if (nave_vida == 2)
+				{
+					DrawRectangle(0, 0, 10, 10, RED);
+					DrawRectangle(25, 0, 10, 10, RED);
+				}
+				else if (nave_vida == 1)
+				{
+					DrawRectangle(0, 0, 10, 10, RED);
+				}
+
+			}
+			DrawText(TextFormat("PUNTOS: %4i", puntaje), static_cast <int>(SCREEN_WIDTH-200),0,20,BLUE);
 			Pausa(pausa, pantalla);
 
 		}
