@@ -26,8 +26,9 @@ enum  SCREEN
 {
 	MENU,
 	JUGAR,
-	INSTRUCCIONES,
-	CREDITOS, 
+	CREDITOS,
+	SALIR,
+	 
 
 };
 
@@ -80,9 +81,10 @@ void TextMenu();
 void Menu(int& pantalla);
 void DrawMenu(Rectangle cursor, Rectangle juego, Rectangle creditos, Rectangle instrucciones);
 void Jugar(Rectangle juego, Rectangle cursor,int& pantalla);
-void Reglas(Rectangle instrucciones, Rectangle cursor,int& pantalla);
+void SalirDelJuego(Rectangle instrucciones, Rectangle cursor,int& pantalla);
 void Creditos(Rectangle creditos, Rectangle cursor, int& pantalla);
 Rectangle Cursor(Rectangle& cursor);
+void reiniciar(int& puntaje, int& nave_vida, int& posx, int& posy, bool& rangocorrecto, float& velx, float& vely, bool& gameOver, Rectangle& nave, int& contadorMeteorosDestruido, int& contadorMeterorosChicos, int& contadorMeterorosMedianos);
 
 
 
@@ -91,11 +93,14 @@ int main()
 {
 	InitWindow(static_cast <int>(SCREEN_WIDTH), static_cast <int>(SCREEN_HEIGHT), "ASTEROID");
 
+	Rectangle regresarMenu = { static_cast<int>(GetScreenWidth())-980.0f, static_cast<int>(GetScreenHeight()) -135.0f,250, 100 };
+	Rectangle cursor = { 0 };
+	
 	int posx, posy = 0;
 	float velx, vely = 0;
 	bool rangocorrecto = 0;
 	int pantalla= MENU;
-	//bool victoria = false;
+	
 	int puntaje = 0;
 
 	int contadorMeteorosDestruido = 0;
@@ -105,6 +110,7 @@ int main()
 	//Texture2D texture = LoadTexture("res/ufoBlue.png");
 	bool pausa = false;
 	bool gameOver = false;
+	bool salirJuego = false;
 ;
 	Rectangle nave;
 	nave.x = SCREEN_WIDTH / 2.0f;
@@ -194,8 +200,7 @@ int main()
 		bala[i].dispara = false;
 		bala[i].spawnVidaBala = 0;
 	}
-	/*cotadorMeterorosMedioanos = 0;
-	cotadorMeterorosPequeños = 0;*/
+	
 	
 	
 
@@ -215,7 +220,7 @@ int main()
 
 	
 
-	while (!WindowShouldClose())
+	while (!WindowShouldClose()&&!salirJuego)
 	{
 		
 		
@@ -225,11 +230,17 @@ int main()
 		 case MENU:
 		
 			Menu(pantalla);
+			reiniciar(puntaje, nave_vida, posx, posy, rangocorrecto, velx, vely, gameOver, nave, contadorMeteorosDestruido, contadorMeterorosChicos, contadorMeterorosMedianos);
 			break;
 
 
-		 case JUGAR:		
 
+		 case JUGAR:
+			 if (nave_vida==0)
+			 {
+				 reiniciar(puntaje, nave_vida, posx, posy, rangocorrecto, velx, vely, gameOver, nave, contadorMeteorosDestruido, contadorMeterorosChicos, contadorMeterorosMedianos);
+
+			 }
 			 if (!gameOver)
 			 {
 				 if (!pausa)
@@ -319,10 +330,8 @@ int main()
 						 }*/
 						 contadorMeterorosMedianos = 0;
 						 contadorMeterorosChicos = 0;
-
-						 cout << contadorMeteorosDestruido << endl;
 						 contadorMeteorosDestruido = 0;
-						 cout << contadorMeteorosDestruido << endl;
+						 
 
 					 }
 
@@ -575,7 +584,7 @@ int main()
 										 contadorMeterorosMedianos++;
 									 }
 									 contadorMeteorosDestruido++;
-									 cout << contadorMeteorosDestruido << endl;
+									
 									 a = MAX_METEORO_GRANDE;
 								 }
 							 }
@@ -608,7 +617,7 @@ int main()
 									 }
 									 contadorMeteorosDestruido++;
 									
-									 cout << contadorMeteorosDestruido << endl;
+									
 
 									 b = MAX_METEORO_MEDIANO;
 								 }
@@ -625,7 +634,7 @@ int main()
 									 c = MAX_METEORO_CHICO;
 									 puntaje += 50;
 									 
-									 cout << contadorMeteorosDestruido << endl;
+									
 
 								 }
 							 }
@@ -653,20 +662,43 @@ int main()
 
 		
 			break;
-		case INSTRUCCIONES:
 		
-			
-				DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 + 70, 30, WHITE);
-			
-
-			
-			break;
 
 		case CREDITOS:
 
-			DrawText("CREDITOS:", GetScreenWidth() / 2 - 300, GetScreenHeight() / 2 + 200, 30, WHITE);
-			DrawText("LEONARDO BRIZUELA", GetScreenWidth() / 2 - 120, GetScreenHeight() / 2 + 200, 30, WHITE);
+			
 
+			cursor = Cursor(cursor);
+
+			DrawText("CREDITOS:", GetScreenWidth() / 2 - 300, GetScreenHeight() / 2 , 30, WHITE);
+			DrawText("LEONARDO BRIZUELA", GetScreenWidth() / 2 - 120, GetScreenHeight() / 2 , 30, WHITE);
+			
+			DrawRectangleRec(regresarMenu, PURPLE);
+			DrawText("VOLVER AL MENU", GetScreenWidth()-970, GetScreenHeight() - 100, 26, WHITE);
+
+			if (CheckCollisionRecs(regresarMenu, cursor))
+			{
+
+				DrawRectangleRec(regresarMenu, VIOLET);
+				DrawText("VOLVER AL MENU", GetScreenWidth()-970, GetScreenHeight() - 100, 26, WHITE);
+
+				if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+				{
+
+					DrawRectangleRec(regresarMenu, DARKPURPLE);
+					DrawText("VOLVER AL MENU", GetScreenWidth()-970 , GetScreenHeight()-100, 26, WHITE);
+
+					pantalla = MENU;
+
+
+				}
+
+			}
+
+			break;
+
+		case SALIR:
+				salirJuego = true;
 			break;
 		
 		default:
@@ -780,9 +812,9 @@ void Pausa(bool &pausa, int& pantalla)
 	if (pausa == true)
 	{
 		Rectangle caja_pausa = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 350, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) - 90, 250, 100 }; 
-		Rectangle volverMenu = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) +100, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) -90,250, 100 };
+		Rectangle volverMenu = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) + 100, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) - 90,250, 100 };
 		Rectangle cursor = { 0 };
-
+	
 		cursor = Cursor(cursor);
 
 		DrawRectangleRec(caja_pausa, PURPLE);
@@ -819,10 +851,8 @@ void Pausa(bool &pausa, int& pantalla)
 
 				DrawRectangleRec(volverMenu, DARKPURPLE);
 				DrawText("VOLVER AL MENU", GetScreenWidth() / 2 +110, GetScreenHeight() / 2 -50, 26, WHITE);
-				cout << pantalla << endl;
+				
 				pantalla = MENU;
-				cout << pantalla << endl;
-
 				
 
 			}
@@ -851,8 +881,8 @@ void DrawMenu(Rectangle cursor, Rectangle juego, Rectangle creditos, Rectangle i
 void TextMenu()
 {
 	DrawText("ASTEROID", GetScreenWidth() / 2 -290, 100, 100, WHITE);
-	DrawText("CREDITOS", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 200, 30, WHITE);
-	DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 +70, 30, WHITE);
+	DrawText("SALIR", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 + 200, 30, WHITE);
+	DrawText("CREDITOS", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 70, 30, WHITE);
 	DrawText("JUGAR", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 -50, 30, WHITE);
 	
 
@@ -861,18 +891,19 @@ void TextMenu()
 void Menu(int& pantalla) {
 
 	Rectangle juego = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) - 90, 250, 100 };
-	Rectangle instruciones = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) + 35, 250, 100 };
-	Rectangle creditos = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) + 160, 250, 100 };
+	Rectangle salir = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) + 160, 250, 100 };
+	Rectangle creditos = { static_cast<int>(GetScreenWidth()) / static_cast <float>(2) - 150, static_cast<int>(GetScreenHeight()) / static_cast <float>(2) + 35, 250, 100 };
+	
 
 	Rectangle cursor = { 0 };
 	cursor=Cursor(cursor);
 
-	DrawMenu(cursor, juego, creditos, instruciones);
+	DrawMenu(cursor, juego, creditos, salir);
 	//HideCursor();
 	TextMenu();
 
 	
-	Reglas(instruciones, cursor, pantalla);
+	SalirDelJuego(salir, cursor, pantalla);
 	Jugar(juego, cursor, pantalla);
 	Creditos( creditos, cursor, pantalla);
 
@@ -896,20 +927,21 @@ void Jugar(Rectangle juego, Rectangle caja, int& pantalla)
 	}
 }
 
-void Reglas(Rectangle instrucciones, Rectangle caja, int& pantalla)
+void SalirDelJuego(Rectangle salir, Rectangle caja, int& pantalla)
 {
-	if (CheckCollisionRecs(instrucciones, caja))
+	if (CheckCollisionRecs(salir, caja))
 	{
 		
-		DrawRectangleRec(instrucciones, VIOLET);
-		DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 + 70, 30, WHITE);
+		DrawRectangleRec(salir, VIOLET);
+		DrawText("SALIR", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 + 200, 30, WHITE);
 
 		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 		{
-			DrawRectangleRec(instrucciones, DARKPURPLE);
-			DrawText("REGLAS", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 + 70, 30, WHITE);
-			pantalla = INSTRUCCIONES;
+			DrawRectangleRec(salir, DARKPURPLE);
+			DrawText("SALIR", GetScreenWidth() / 2 - 80, GetScreenHeight() / 2 + 200, 30, WHITE);
+			pantalla = SALIR;
 		}
+
 
 	}
 }
@@ -920,11 +952,11 @@ void Creditos(Rectangle creditos, Rectangle cursor, int& pantalla)
 	{ 
 		
 		DrawRectangleRec(creditos, VIOLET);
-		DrawText("CREDITOS", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 200, 30, WHITE);
+		DrawText("CREDITOS", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 70, 30, WHITE);
 		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 		{
 			DrawRectangleRec(creditos, DARKPURPLE);
-			DrawText("CREDITOS", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 200, 30, WHITE);
+			DrawText("CREDITOS", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 70, 30, WHITE);
 			pantalla = CREDITOS;
 		}
 
@@ -939,6 +971,110 @@ Rectangle Cursor(Rectangle& cursor)
 	return cursor;
 
 }
+void reiniciar(int& puntaje, int& nave_vida,int& posx,int& posy,bool& rangocorrecto,float& velx,float& vely,bool& gameOver, Rectangle& nave,int& contadorMeteorosDestruido,int& contadorMeterorosChicos, int& contadorMeterorosMedianos)
+{
+	posx, posy = 0;																													
+	velx, vely = 0;
+	puntaje = 0;
+
+    contadorMeteorosDestruido = 0;
+    contadorMeterorosChicos   = 0;
+    contadorMeterorosMedianos = 0;
+
+	//Texture2D texture = LoadTexture("res/ufoBlue.png");
+	gameOver = false;
+	rangocorrecto = false;
+	
+	nave.x = SCREEN_WIDTH / 2.0f;
+	nave.y = SCREEN_HEIGHT / 2.0f;
+	nave.width = 25;
+	nave.height = 25;
+	nave_vida = 3;
+
+	for (int i = 0; i < MAX_METEORO_GRANDE; i++)
+	{
+		posx = GetRandomValue(0, static_cast <int>(SCREEN_WIDTH));
+
+		while (!rangocorrecto)
+		{
+			if (posx > SCREEN_WIDTH / 2 - 150 && posx < SCREEN_WIDTH / 2 + 150)
+			{
+				posx = GetRandomValue(0, static_cast <int>(SCREEN_WIDTH));
+			}
+			else
+			{
+				rangocorrecto = true;
+			}
+		}
+		rangocorrecto = false;
+		posy = GetRandomValue(0, static_cast <int> (SCREEN_HEIGHT));
+		while (!rangocorrecto)
+		{
+			if (posy > SCREEN_HEIGHT / 2 - 150 && posy < SCREEN_HEIGHT / 2 + 150)
+			{
+				posy = GetRandomValue(0, static_cast <int>(SCREEN_HEIGHT));
+			}
+			else
+			{
+				rangocorrecto = true;
+			}
+		}
+		meteoroGrande[i].position.x = static_cast <float>(posx);
+		meteoroGrande[i].position.y = static_cast <float>(posy);
+
+		rangocorrecto = false;
+
+		velx = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD), /*static_cast <int>*/(METEORO_VELOCIDAD));
+		vely = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD), /*static_cast <int>*/(METEORO_VELOCIDAD));
+
+		if (velx == 0 && vely == 0)
+		{
+			velx = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD), /*static_cast <int>*/(METEORO_VELOCIDAD));
+			vely = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD), /*static_cast <int>*/(METEORO_VELOCIDAD));
+
+		}
+		else
+		{
+			rangocorrecto = false;
+		}
+
+		meteoroGrande[i].velocidad.x = static_cast <float>(velx);
+		meteoroGrande[i].velocidad.y = static_cast <float>(vely);
+		meteoroGrande[i].radio = 40.0f;
+		meteoroGrande[i].activo = true;
+	}
+	for (int i = 0; i < MAX_METEORO_MEDIANO; i++)
+	{
+		meteoroMediano[i].position.x = -100;
+		meteoroMediano[i].position.y = -100;
+		meteoroMediano[i].velocidad.x = 0;
+		meteoroMediano[i].velocidad.y = 0;
+		meteoroMediano[i].radio = 20.0f;
+		meteoroMediano[i].activo = false;
+	}
+	for (int i = 0; i < MAX_METEORO_CHICO; i++)
+	{
+		meteoroChico[i].position.x = -100;
+		meteoroChico[i].position.y = -100;
+		meteoroChico[i].velocidad.x = 0;
+		meteoroChico[i].velocidad.y = 0;
+		meteoroChico[i].radio = 10.0f;
+		meteoroChico[i].activo = false;
+	}
+
+	for (int i = 0; i < NAVE_BALAS_MAX; i++)
+	{
+		bala[i].position.x = 0;
+		bala[i].position.y = 0;
+		bala[i].velocidad_x = 0.01f;
+		bala[i].velocidad_y = 0.01f;
+		bala[i].radio = 2.0f;
+		bala[i].dispara = false;
+		bala[i].spawnVidaBala = 0;
+	}
+	
+}
+
 //void InitGame()
 //{
-//}
+
