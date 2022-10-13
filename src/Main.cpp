@@ -717,7 +717,7 @@ int main()
 			{
 				if (bala[i].dispara)
 				{
-					DrawCircle(static_cast <int>(bala[i].position.x), static_cast <int>(bala[i].position.y), bala[i].radio, WHITE);
+					//DrawCircle(static_cast <int>(bala[i].position.x), static_cast <int>(bala[i].position.y), bala[i].radio, WHITE);
 					DrawTexture(texturaLaser, static_cast <int>(bala[i].position.x), static_cast <int>(bala[i].position.y)-20, RAYWHITE);
 
 				}
@@ -728,6 +728,7 @@ int main()
 				if (meteoroGrande[i].activo)
 				{
 					DrawCircle(static_cast <int>(meteoroGrande[i].position.x), static_cast <int>(meteoroGrande[i].position.y), meteoroGrande[i].radio, WHITE);
+					DrawTexture(texturaMeteoroGrande,static_cast <int>(meteoroGrande[i].position.x)-50, static_cast <int>(meteoroGrande[i].position.y)-36, WHITE);
 				}
 
 			}
@@ -767,7 +768,7 @@ int main()
 				}
 
 			}
-			DrawText(TextFormat("PUNTOS: %4i", puntaje), static_cast <int>(SCREEN_WIDTH-200),0,20,BLUE);
+			DrawText(TextFormat("PUNTOS: %4i", puntaje), static_cast <int>(SCREEN_WIDTH-200),0,25,YELLOW);
 			
 			
 			Pausa(pausa, pantalla, reinicio_pausa);
