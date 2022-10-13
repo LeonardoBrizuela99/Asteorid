@@ -53,31 +53,18 @@ struct Meteoro
 	bool activo;
 };
 
-//struct Nave
-//{
-//	float X= SCREEN_WIDTH / 2.0f;
-//	float Y= SCREEN_HEIGHT / 2.0f;
-//	int Widht=25;
-//	int Height=25;
-//};
+
 BALA bala[NAVE_BALAS_MAX] = { 0 };
 Meteoro meteoroGrande[MAX_METEORO_GRANDE] = { 0 };
 Meteoro meteoroMediano[MAX_METEORO_MEDIANO] = { 0 };
 Meteoro meteoroChico[MAX_METEORO_CHICO] = { 0 };
 
-//void init()
-//{
-//	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "ASTEROID");
-//
-//}
-//Vector2 GetMousePosition()
-//{
-//
-//}
+
+
+
 void Wall(Rectangle& nave);
-void Pausa(bool& pausa, int& pantalla);
+void Pausa(bool& pausa, int& pantalla,bool& reinicio_pausa);
 void TextMenu();
-//void InitGame();
 void Menu(int& pantalla);
 void DrawMenu(Rectangle cursor, Rectangle juego, Rectangle creditos, Rectangle instrucciones);
 void Jugar(Rectangle juego, Rectangle cursor,int& pantalla);
@@ -102,12 +89,22 @@ int main()
 	int pantalla= MENU;
 	
 	int puntaje = 0;
+	
+
 
 	int contadorMeteorosDestruido = 0;
 	int contadorMeterorosChicos = 0;
 	int contadorMeterorosMedianos = 0;
-
-	//Texture2D texture = LoadTexture("res/ufoBlue.png");
+	InitAudioDevice();
+	
+	Texture2D texturaNave = LoadTexture("res/playerShip2_orange.png");
+	Texture2D texturaLaser = LoadTexture("res/laserRed02.png");
+	Texture2D texturaMeteoroGrande = LoadTexture("res/meteorBrown_big1.png");
+	Texture2D texturaMeteoroMediano = LoadTexture("res/meteorBrown_med1.png");
+	Texture2D texturaMeteoroChico = LoadTexture("res/meteorBrown_small2.png");
+	//Texture2D texture = LoadTexture("ufoBlue.png");
+	Sound sonidoLaser = LoadSound("res/sfx_laser1.ogg");
+	
 	bool pausa = false;
 	bool gameOver = false;
 	bool salirJuego = false;
@@ -152,13 +149,13 @@ int main()
 
 		rangocorrecto = false;
 
-		velx = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD) , /*static_cast <int>*/(METEORO_VELOCIDAD));
-		vely = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD) , /*static_cast <int>*/(METEORO_VELOCIDAD));
+		velx = (float)GetRandomValue(-(METEORO_VELOCIDAD) , (METEORO_VELOCIDAD));
+		vely = (float)GetRandomValue(-(METEORO_VELOCIDAD) , (METEORO_VELOCIDAD));
 
 		if (velx==0 && vely==0)
 		{
-			velx = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD), /*static_cast <int>*/(METEORO_VELOCIDAD));
-			vely = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD), /*static_cast <int>*/(METEORO_VELOCIDAD));
+			velx = (float)GetRandomValue(-(METEORO_VELOCIDAD), (METEORO_VELOCIDAD));
+			vely = (float)GetRandomValue(-(METEORO_VELOCIDAD), (METEORO_VELOCIDAD));
 				
 		}
 		else
@@ -203,7 +200,7 @@ int main()
 	
 	
 	
-
+	bool reinicio_pausa = false;
 	Vector2 pivot;
 	pivot.x = nave.width / 2;
 	pivot.y = nave.height / 2;
@@ -230,21 +227,25 @@ int main()
 		 case MENU:
 		
 			Menu(pantalla);
-			reiniciar(puntaje, nave_vida, posx, posy, rangocorrecto, velx, vely, gameOver, nave, contadorMeteorosDestruido, contadorMeterorosChicos, contadorMeterorosMedianos);
+			
+
+
+			if (nave_vida == 0)
+			{
+				reiniciar(puntaje, nave_vida, posx, posy, rangocorrecto, velx, vely, gameOver, nave, contadorMeteorosDestruido, contadorMeterorosChicos, contadorMeterorosMedianos);
+
+			}
 			break;
-
-
-
 		 case JUGAR:
-			 if (nave_vida==0)
-			 {
-				 reiniciar(puntaje, nave_vida, posx, posy, rangocorrecto, velx, vely, gameOver, nave, contadorMeteorosDestruido, contadorMeterorosChicos, contadorMeterorosMedianos);
-
-			 }
+			
+			
 			 if (!gameOver)
 			 {
+				
+				 
 				 if (!pausa)
 				 {
+					
 					 if (contadorMeteorosDestruido >= MAX_METEORO_CHICO + MAX_METEORO_GRANDE + MAX_METEORO_MEDIANO)
 					 {
 						 for (int i = 0; i < MAX_METEORO_GRANDE; i++)
@@ -280,13 +281,13 @@ int main()
 
 							 rangocorrecto = false;
 
-							 velx = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD), /*static_cast <int>*/(METEORO_VELOCIDAD));
-							 vely = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD), /*static_cast <int>*/(METEORO_VELOCIDAD));
+							 velx = (float)GetRandomValue(-(METEORO_VELOCIDAD), (METEORO_VELOCIDAD));
+							 vely = (float)GetRandomValue(-(METEORO_VELOCIDAD), (METEORO_VELOCIDAD));
 
 							 if (velx == 0 && vely == 0)
 							 {
-								 velx = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD), /*static_cast <int>*/(METEORO_VELOCIDAD));
-								 vely = (float)GetRandomValue(-/*static_cast <int>*/(METEORO_VELOCIDAD), /*static_cast <int>*/(METEORO_VELOCIDAD));
+								 velx = (float)GetRandomValue(-(METEORO_VELOCIDAD),(METEORO_VELOCIDAD));
+								 vely = (float)GetRandomValue(-(METEORO_VELOCIDAD),(METEORO_VELOCIDAD));
 
 							 }
 							 else
@@ -372,11 +373,12 @@ int main()
 						 {
 							 if (!bala[i].dispara)
 							 {
+								 PlaySound(sonidoLaser);
 								 bala[i].position.x = nave.x;
 								 bala[i].position.y = nave.y;
 								 bala[i].dispara = true;
-								 bala[i].velocidad_x = Vectornormalizado.x * 0.3f;//0.08f
-								 bala[i].velocidad_y = Vectornormalizado.y * 0.3f;//0.08f
+								 bala[i].velocidad_x = Vectornormalizado.x * 0.5f;//0.08f
+								 bala[i].velocidad_y = Vectornormalizado.y * 0.5f;//0.08f
 								 bala[i].rotation = rotation;
 								 break;
 
@@ -642,12 +644,6 @@ int main()
 						 }
 					 }
 				 }
-
-				
-				
-				 
-					/* victoria = true;
-					 pantalla = MENU;*/
 				 
 				 if (nave_vida <= 0)
 				 {
@@ -656,10 +652,6 @@ int main()
 
 				 }
 			 }
-			
-
-
-
 		
 			break;
 		
@@ -708,19 +700,26 @@ int main()
 		BeginDrawing();
 
 	
-		//DrawTexture(texture, static_cast<int>(SCREEN_HEIGHT) / 2, static_cast<int>(SCREEN_WIDTH) / 2, WHITE);
+		//DrawTexture(texture, static_cast<int>(SCREEN_HEIGHT) / 2, static_cast<int>(SCREEN_WIDTH) / 2, RAYWHITE);
 
 		if (pantalla==JUGAR)
 		{
 			DrawRectanglePro(nave, pivot, rotation, RED);
+			//DrawTexturePro(texture, nave,static_cast<Rectangle>(nave.width/2+nave.height/2),pivot,rotation, RAYWHITE);
+			DrawTexture(texturaNave, static_cast <int>(nave.x)-55, static_cast <int> (nave.y)-55, WHITE);
 			
-			
+		/*   texturaLaser = LoadTexture("res/laserRed02.png");
+			 texturaMeteoroGrande = LoadTexture("res/meteorBrown_big1.png");
+			 texturaMeteoroMediano = LoadTexture("res/meteorBrown_med1.png");
+			 texturaMeteoroChico = LoadTexture("res/meteorBrown_small2.png");*/
 
 			for (int i = 0; i < NAVE_BALAS_MAX; i++)
 			{
 				if (bala[i].dispara)
 				{
 					DrawCircle(static_cast <int>(bala[i].position.x), static_cast <int>(bala[i].position.y), bala[i].radio, WHITE);
+					DrawTexture(texturaLaser, static_cast <int>(bala[i].position.x), static_cast <int>(bala[i].position.y)-20, RAYWHITE);
+
 				}
 			}
 
@@ -769,8 +768,9 @@ int main()
 
 			}
 			DrawText(TextFormat("PUNTOS: %4i", puntaje), static_cast <int>(SCREEN_WIDTH-200),0,20,BLUE);
-			Pausa(pausa, pantalla);
-
+			
+			
+			Pausa(pausa, pantalla, reinicio_pausa);
 		}
 		
 		
@@ -779,7 +779,17 @@ int main()
 
 		/*Draw();*/
     }
-
+	UnloadTexture(texturaNave);
+	UnloadTexture(texturaLaser);
+	UnloadTexture(texturaMeteoroGrande);
+	UnloadTexture(texturaMeteoroMediano);
+	UnloadTexture(texturaMeteoroChico);
+	//UnloadTexture(texturaNave);
+	
+		
+		
+		 
+	CloseAudioDevice();
 	CloseWindow();
 }
 
@@ -807,7 +817,7 @@ void Wall(Rectangle &nave)
 		nave.y = SCREEN_HEIGHT + nave.height;
 	}
 }
-void Pausa(bool &pausa, int& pantalla)
+void Pausa(bool &pausa, int& pantalla, bool& reinicio_pausa)
 {
 	if (pausa == true)
 	{
@@ -850,9 +860,10 @@ void Pausa(bool &pausa, int& pantalla)
 			{
 
 				DrawRectangleRec(volverMenu, DARKPURPLE);
-				DrawText("VOLVER AL MENU", GetScreenWidth() / 2 +110, GetScreenHeight() / 2 -50, 26, WHITE);
-				
+				DrawText("VOLVER AL MENU", GetScreenWidth() / 2 +110, GetScreenHeight() / 2 -50, 26, WHITE);	
+
 				pantalla = MENU;
+				reinicio_pausa = !reinicio_pausa;
 				
 
 			}
