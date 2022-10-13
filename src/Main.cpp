@@ -102,9 +102,15 @@ int main()
 	Texture2D texturaMeteoroGrande = LoadTexture("res/meteorBrown_big1.png");
 	Texture2D texturaMeteoroMediano = LoadTexture("res/meteorBrown_med1.png");
 	Texture2D texturaMeteoroChico = LoadTexture("res/meteorBrown_small2.png");
-	//Texture2D texture = LoadTexture("ufoBlue.png");
+	Texture2D texturaVida = LoadTexture("res/playerLife2_orange.png");
+	Texture2D texturaMuerte = LoadTexture("res/laserRed08.png");
 	Sound sonidoLaser = LoadSound("res/sfx_laser1.ogg");
+	Sound sonidoMeteoro = LoadSound("res/503554__robinhood76__08191-heavy-stones-falling.wav");
+	Sound sonidoMuerte = LoadSound("res/446759__ianlyanx__chicle-explotando.wav");
+	Sound musica = LoadSound("res/650556__stephiequeen__communicate-song-loop.ogg");
+	//Music musica = LoadMusicStream("res/ 650556__stephiequeen__communicate - song - loop.ogg");
 	
+
 	bool pausa = false;
 	bool gameOver = false;
 	bool salirJuego = false;
@@ -215,12 +221,13 @@ int main()
 	Vector2 Aceleracion{0.01f};
 	Vector2 NuevaPosNave{ 0 };
 
-	
+	PlaySound(musica);
+
 
 	while (!WindowShouldClose()&&!salirJuego)
 	{
 		
-		
+	 
 		switch (pantalla)
 		{
 
@@ -531,6 +538,9 @@ int main()
 							 nave_vida--;
 							 nave.x = SCREEN_WIDTH / 2.0f;
 							 nave.y = SCREEN_HEIGHT / 2.0f;
+							 PlaySound(sonidoMuerte);
+							 PlaySound(sonidoMuerte);
+							 DrawTexture(texturaMuerte, static_cast <int>(nave.x)-25, static_cast <int>(nave.y)-50,RAYWHITE);
 						 }
 
 					 }
@@ -541,6 +551,10 @@ int main()
 							 nave_vida--;
 							 nave.x = SCREEN_WIDTH / 2.0f;
 							 nave.y = SCREEN_HEIGHT / 2.0f;
+							 PlaySound(sonidoMuerte);
+							 DrawTexture(texturaMuerte, static_cast <int>(nave.x)-25, static_cast <int>(nave.y)-50, RAYWHITE);
+
+
 						 }
 
 					 }
@@ -551,6 +565,10 @@ int main()
 							 nave_vida--;
 							 nave.x = SCREEN_WIDTH / 2.0f;
 							 nave.y = SCREEN_HEIGHT / 2.0f;
+							 PlaySound(sonidoMuerte);
+							 DrawTexture(texturaMuerte, static_cast <int>(nave.x)-25, static_cast <int>(nave.y)-50, RAYWHITE);
+
+
 						 }
 
 					 }
@@ -587,6 +605,7 @@ int main()
 									 }
 									 contadorMeteorosDestruido++;
 									
+									 PlaySound(sonidoMeteoro);
 									 a = MAX_METEORO_GRANDE;
 								 }
 							 }
@@ -619,7 +638,8 @@ int main()
 									 }
 									 contadorMeteorosDestruido++;
 									
-									
+									 PlaySound(sonidoMeteoro);
+
 
 									 b = MAX_METEORO_MEDIANO;
 								 }
@@ -633,6 +653,7 @@ int main()
 									 bala[i].spawnVidaBala = 0;
 									 meteoroChico[c].activo = false;
 									 contadorMeteorosDestruido++;
+									 PlaySound(sonidoMeteoro);
 									 c = MAX_METEORO_CHICO;
 									 puntaje += 50;
 									 
@@ -662,8 +683,20 @@ int main()
 
 			cursor = Cursor(cursor);
 
-			DrawText("CREDITOS:", GetScreenWidth() / 2 - 300, GetScreenHeight() / 2 , 30, WHITE);
-			DrawText("LEONARDO BRIZUELA", GetScreenWidth() / 2 - 120, GetScreenHeight() / 2 , 30, WHITE);
+			DrawText("CREDITOS:", GetScreenWidth() / 2-300, GetScreenHeight()/2-350, 30, WHITE);
+			DrawText("SONIDO METEORO Robinhood76 ", 0, GetScreenHeight() / 2 -200, 20, WHITE);
+			DrawText("PAGINA PRINCIPAL:",0, GetScreenHeight() / 2 -150, 20, WHITE);
+			DrawText("https://freesound.org/people/Robinhood76/",0, GetScreenHeight() / 2 -100, 20, WHITE);
+			DrawText("PAGINA DEL SONIDO DESCARGADO:",0, GetScreenHeight() / 2 -50, 20, WHITE);
+			DrawText(" https://freesound.org/people/Robinhood76/sounds/503554/",0, GetScreenHeight() / 2 -20, 20, WHITE);
+			DrawText("MUSICA: StephieQueen", 0 , GetScreenHeight() / 2 , 20, WHITE);
+			DrawText("PAGINA PRINCIPAL:",0, GetScreenHeight() / 2 +20, 20, WHITE);
+			DrawText("https://freesound.org/people/StephieQueen/",0, GetScreenHeight() / 2+50 , 20, WHITE);
+			DrawText("PAGINA DE LA MUSICA: ", 0, GetScreenHeight() / 2 +80, 20, WHITE);
+			DrawText(" https://freesound.org/people/StephieQueen/sounds/650556/", 0, GetScreenHeight() / 2 +100, 20, WHITE);
+			DrawText("ASSETS:https://kenney.nl/assets/space-shooter-redux", GetScreenWidth() / 2 - 200, GetScreenHeight() / 2 + 150, 20, WHITE);
+			DrawText("CODIGO: LEONARDO BRIZUELA", GetScreenWidth() / 2 - 200, GetScreenHeight() / 2+250, 20, WHITE);
+
 			
 			DrawRectangleRec(regresarMenu, PURPLE);
 			DrawText("VOLVER AL MENU", GetScreenWidth()-970, GetScreenHeight() - 100, 26, WHITE);
@@ -700,7 +733,7 @@ int main()
 		BeginDrawing();
 
 	
-		//DrawTexture(texture, static_cast<int>(SCREEN_HEIGHT) / 2, static_cast<int>(SCREEN_WIDTH) / 2, RAYWHITE);
+		
 
 		if (pantalla==JUGAR)
 		{
@@ -708,10 +741,7 @@ int main()
 			//DrawTexturePro(texture, nave,static_cast<Rectangle>(nave.width/2+nave.height/2),pivot,rotation, RAYWHITE);
 			DrawTexture(texturaNave, static_cast <int>(nave.x)-55, static_cast <int> (nave.y)-55, WHITE);
 			
-		/*   texturaLaser = LoadTexture("res/laserRed02.png");
-			 texturaMeteoroGrande = LoadTexture("res/meteorBrown_big1.png");
-			 texturaMeteoroMediano = LoadTexture("res/meteorBrown_med1.png");
-			 texturaMeteoroChico = LoadTexture("res/meteorBrown_small2.png");*/
+		
 
 			for (int i = 0; i < NAVE_BALAS_MAX; i++)
 			{
@@ -727,7 +757,7 @@ int main()
 			{
 				if (meteoroGrande[i].activo)
 				{
-					DrawCircle(static_cast <int>(meteoroGrande[i].position.x), static_cast <int>(meteoroGrande[i].position.y), meteoroGrande[i].radio, WHITE);
+					//DrawCircle(static_cast <int>(meteoroGrande[i].position.x), static_cast <int>(meteoroGrande[i].position.y), meteoroGrande[i].radio, WHITE);
 					DrawTexture(texturaMeteoroGrande,static_cast <int>(meteoroGrande[i].position.x)-50, static_cast <int>(meteoroGrande[i].position.y)-36, WHITE);
 				}
 
@@ -736,7 +766,8 @@ int main()
 			{
 				if (meteoroMediano[i].activo)
 				{
-					DrawCircle(static_cast <int>(meteoroMediano[i].position.x), static_cast <int>(meteoroMediano[i].position.y), meteoroMediano[i].radio, WHITE);
+					//DrawCircle(static_cast <int>(meteoroMediano[i].position.x), static_cast <int>(meteoroMediano[i].position.y), meteoroMediano[i].radio, WHITE);
+					DrawTexture(texturaMeteoroMediano,static_cast <int>(meteoroMediano[i].position.x)-25, static_cast <int>(meteoroMediano[i].position.y)-17, WHITE);
 				}
 
 			}
@@ -744,7 +775,8 @@ int main()
 			{
 				if (meteoroChico[i].activo)
 				{
-					DrawCircle(static_cast <int>(meteoroChico[i].position.x), static_cast <int>(meteoroChico[i].position.y), meteoroChico[i].radio, WHITE);
+					//DrawCircle(static_cast <int>(meteoroChico[i].position.x), static_cast <int>(meteoroChico[i].position.y), meteoroChico[i].radio, WHITE);
+					DrawTexture(texturaMeteoroChico,static_cast <int>(meteoroChico[i].position.x)-14, static_cast <int>(meteoroChico[i].position.y)-8, WHITE);
 				}
 
 			}
@@ -753,18 +785,28 @@ int main()
 			{
 				if (nave_vida == 3)
 				{
-					DrawRectangle(0, 0, 10, 10, RED);
-					DrawRectangle(25, 0, 10, 10, RED);
-					DrawRectangle(50, 0, 10, 10, RED);
+					DrawTexture(texturaVida, 0, 0, RAYWHITE);
+					DrawTexture(texturaVida, 40, 0, RAYWHITE);
+					DrawTexture(texturaVida, 80, 0, RAYWHITE);
+
+					//DrawRectangle(0, 0, 10, 10, RED);
+					//DrawRectangle(50, 0, 10, 10, RED);
+					//DrawRectangle(90, 0, 10, 10, RED);
 				}
 				else if (nave_vida == 2)
 				{
-					DrawRectangle(0, 0, 10, 10, RED);
-					DrawRectangle(25, 0, 10, 10, RED);
+					//DrawRectangle(0, 0, 10, 10, RED);
+					//DrawRectangle(25, 0, 10, 10, RED);
+
+					DrawTexture(texturaVida, 0, 0, RAYWHITE);
+					DrawTexture(texturaVida, 40, 0, RAYWHITE);
+
 				}
 				else if (nave_vida == 1)
 				{
-					DrawRectangle(0, 0, 10, 10, RED);
+					DrawTexture(texturaVida, 0, 0, RAYWHITE);
+					//DrawRectangle(0, 0, 10, 10, RED);
+
 				}
 
 			}
@@ -778,14 +820,15 @@ int main()
 		ClearBackground(BLACK);
 		EndDrawing();
 
-		/*Draw();*/
+		
     }
 	UnloadTexture(texturaNave);
 	UnloadTexture(texturaLaser);
 	UnloadTexture(texturaMeteoroGrande);
 	UnloadTexture(texturaMeteoroMediano);
 	UnloadTexture(texturaMeteoroChico);
-	//UnloadTexture(texturaNave);
+	UnloadTexture(texturaVida);
+	UnloadTexture(texturaMuerte);
 	
 		
 		
@@ -881,6 +924,7 @@ void Pausa(bool &pausa, int& pantalla, bool& reinicio_pausa)
 		//1 true
 	}
 }
+
 void DrawMenu(Rectangle cursor, Rectangle juego, Rectangle creditos, Rectangle instrucciones)
 {
 	DrawRectangleRec(cursor, PURPLE);
@@ -911,7 +955,7 @@ void Menu(int& pantalla) {
 	cursor=Cursor(cursor);
 
 	DrawMenu(cursor, juego, creditos, salir);
-	//HideCursor();
+	
 	TextMenu();
 
 	
@@ -983,6 +1027,8 @@ Rectangle Cursor(Rectangle& cursor)
 	return cursor;
 
 }
+
+
 void reiniciar(int& puntaje, int& nave_vida,int& posx,int& posy,bool& rangocorrecto,float& velx,float& vely,bool& gameOver, Rectangle& nave,int& contadorMeteorosDestruido,int& contadorMeterorosChicos, int& contadorMeterorosMedianos)
 {
 	posx, posy = 0;																													
@@ -993,7 +1039,7 @@ void reiniciar(int& puntaje, int& nave_vida,int& posx,int& posy,bool& rangocorre
     contadorMeterorosChicos   = 0;
     contadorMeterorosMedianos = 0;
 
-	//Texture2D texture = LoadTexture("res/ufoBlue.png");
+	
 	gameOver = false;
 	rangocorrecto = false;
 	
@@ -1089,4 +1135,14 @@ void reiniciar(int& puntaje, int& nave_vida,int& posx,int& posy,bool& rangocorre
 
 //void InitGame()
 //{
-
+/*
+* 
+* musica
+* https://freesound.org/people/StephieQueen/sounds/650556/
+* 
+https://kenney.nl/assets/space-shooter-redux
+sonido de meteoro
+https://freesound.org/people/Robinhood76/sounds/503554/
+sonido de muerte
+https://freesound.org/people/IanLyanx/sounds/446759/#
+*/
